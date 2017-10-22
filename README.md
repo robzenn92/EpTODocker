@@ -80,7 +80,7 @@ $ minikube addons enable heapster
 $ minikube addons open heapster
 ```
 
-## Test
+# Test
 
 To execute tests no matter in which packages they are, please run the following.
 
