@@ -1,0 +1,13 @@
+pip==9.0.1
+docker
+argparse
+pyyaml
+google-auth
+kubernetes
+Flask
+requests
+pytz
+apscheduler
+simplejson
+numpy
+nose2

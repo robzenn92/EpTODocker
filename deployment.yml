@@ -1,0 +1,66 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: epto-deployment
+spec:
+  replicas: 6
+  template:
+    metadata:
+      labels:
+        app: epto
+    spec:
+      containers:
+      - name: cyclon
+        image: cyclon:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: VIEW_LIMIT
+          value: '4'
+        - name: SHUFFLE_LENGTH
+          value: '3'
+        - name: LOG_LEVEL
+          value: 'INFO'
+        - name: LOG_DATE_FORMAT
+          value: '%Y-%m-%d,%H:%M:%S'
+        - name: LOG_FORMAT
+          value: '[%(asctime)s.%(msecs)03d - %(levelname)s] - %(filename)s:%(lineno)d - %(message)s'
+#      - name: epto
+#        image: epto:latest
+#        imagePullPolicy: Never
+#        ports:
+#        - containerPort: 5001
+#        env:
+#        - name: MY_POD_NAME
+#          valueFrom:
+#            fieldRef:
+#              fieldPath: metadata.name
+#        - name: MY_POD_UID
+#          value: 'lol'
+#        - name: MY_POD_IP
+#          valueFrom:
+#            fieldRef:
+#              fieldPath: status.podIP
+#        - name: VIEW_LIMIT
+#          value: '2'
+#        - name: BROADCAST_PROB
+#          value: '0.6'
+#        - name: FANOUT
+#          value: '2'
+#        - name: TTL
+#          value: '3'
+#        - name: LOG_LEVEL
+#          value: 'INFO'
+#        - name: LOG_DATE_FORMAT
+#          value: '%Y-%m-%d,%H:%M:%S'
+#        - name: LOG_FORMAT
+#          value: '[%(asctime)s.%(msecs)03d - %(levelname)s] - %(filename)s:%(lineno)d - %(message)s'

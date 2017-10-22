@@ -1,0 +1,6 @@
+google-auth
+kubernetes
+Flask
+requests
+pytz
+apscheduler
