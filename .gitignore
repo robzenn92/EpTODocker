@@ -65,7 +65,7 @@ instance/
 docs/_build/
 
 # PyCharm
-.idea
+.idea/
 
 # PyBuilder
 target/
