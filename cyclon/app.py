@@ -6,7 +6,8 @@ from flask import Flask, request
 from cyclon import Cyclon
 from messages.message import Message
 from partialView.partialView import PartialView
-from configuration import my_ip, format_address, who_am_i, logger
+from configuration import logger
+from helpers import my_ip, format_address, who_am_i
 
 # -----
 # Global vars
@@ -70,12 +71,10 @@ def exchange_view():
     logger.info('Got this (from ' + message.get('source') + ') as received_partial_view:\n' + str(
         received_partial_view) + ".")
 
-    source = message.get('source')
+    assert received_partial_view.size == received_partial_view.shuffle_length
+
     size = received_partial_view.size
-    to_avoid = None
-    if cyclon.partialView.contains_ip(source):
-        to_avoid = cyclon.partialView.get_peer_by_ip(source)
-    to_send = cyclon.partialView.select_neighbors(to_avoid, size)
+    to_send = cyclon.partialView.select_neighbors(size=size)
 
     logger.info('I will send (to ' + message.get('source') + ') the following:\n' + str(
         to_send) + ".")

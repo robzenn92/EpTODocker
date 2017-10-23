@@ -40,6 +40,10 @@ class PartialView:
         self.size = size
         self.limit = limit
         self.shuffle_length = shuffle_length
+
+        # shuffle_length must be less than limit
+        assert self.shuffle_length < self.limit
+
         if peer_list is None:
             self.peer_list = []
         else:
@@ -120,8 +124,12 @@ class PartialView:
 
     # TODO: Do I need to check if size > self.size?
     def select_neighbors(self, avoid_peer=None, size=None):
+
         p = PartialView(self.ip)
         peer_list = [peer for peer in self.peer_list if peer != avoid_peer]
+
+        assert len(peer_list) >= self.shuffle_length - 1
+
         if size is None:
             size = self.shuffle_length - 1
         while p.size < size:

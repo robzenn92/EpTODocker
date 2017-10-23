@@ -6,7 +6,7 @@ import time
 import json
 import requests
 from os import environ
-from configuration import format_address
+from helpers import format_address
 from kubernetesClient import KubernetesClient
 from messages.message import Message
 from partialView.partialView import PartialView, PodDescriptor
