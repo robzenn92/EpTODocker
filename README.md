@@ -26,6 +26,11 @@ Please, be sure that docker is running. In order to start up a single-node clust
 $ minikube start
 ```
 
+In case you want to have more memory.
+```
+$ minikube start --memory 4096
+```
+
 In case you set up a local [Docker Registry](https://docs.docker.com/registry/), you need to run the following.
 ```
 $ minikube start --insecure-registry localhost:5000
@@ -79,6 +84,14 @@ Kubernetes comes with a variety of addons. One of them which is really useful in
 $ minikube addons enable heapster
 $ minikube addons open heapster
 ```
+
+Other addons that will be used are [Elasticsearch](https://www.elastic.co), [Fluentd](https://www.fluentd.org) and [Kibana](https://www.elastic.co/products/kibana). These definition can be found [here (v1.8.0)](https://github.com/kubernetes/kubernetes/tree/v1.8.0/cluster/addons/fluentd-elasticsearch). Elasticsearch is a search engine that is responsible for storing our logs and allowing for them to be queried. Fluentd sends log messages from Kubernetes to Elasticsearch, whereas Kibana is a graphical interface for viewing and querying the logs stored in Elasticsearch. You can enable them by executing:
+
+```
+$ cd efk
+$ sh deploy.sh
+```
+
 
 # Test
 
