@@ -63,11 +63,11 @@ def get_k_view():
 def exchange_view():
     global cyclon
 
-    logger.info('/exchange-view: My view is:\n' + str(cyclon.partialView) + ".")
+    logger.info('My view is:\n' + str(cyclon.partialView) + ".")
     message = json.loads(request.get_json())
 
     received_partial_view = PartialView.from_dict(message.get('data'))
-    logger.info('/exchange-view: Got this (from ' + message.get('source') + ') as received_partial_view:\n' + str(
+    logger.info('Got this (from ' + message.get('source') + ') as received_partial_view:\n' + str(
         received_partial_view) + ".")
 
     source = message.get('source')
@@ -77,18 +77,18 @@ def exchange_view():
         to_avoid = cyclon.partialView.get_peer_by_ip(source)
     to_send = cyclon.partialView.select_neighbors(to_avoid, size)
 
-    logger.info('/exchange-view: I will send (to ' + message.get('source') + ') the following:\n' + str(
+    logger.info('I will send (to ' + message.get('source') + ') the following:\n' + str(
         to_send) + ".")
 
     for peer in to_send.get_peer_list():
         done = cyclon.partialView.remove_peer(peer)
-        logger.info('/exchange-view: I tried to remove ' + str(peer) + " -> " + str(done))
+        logger.info('I tried to remove ' + str(peer) + " -> " + str(done))
 
-    logger.info('/exchange-view: after having removed:\n' + str(cyclon.partialView))
+    logger.info('After having removed:\n' + str(cyclon.partialView))
 
     # Merge current partial view with the one just received
     cyclon.partialView.merge(received_partial_view)
-    logger.info('/exchange-view: after merged:\n' + str(cyclon.partialView))
+    logger.info('After merged:\n' + str(cyclon.partialView))
 
     for peer in to_send.get_peer_list():
         if cyclon.partialView.contains(peer):
@@ -97,14 +97,14 @@ def exchange_view():
         else:
             cyclon.partialView.add_peer(peer)
 
-    logger.info('/exchange-view: I merged my view with the one received obtaining the following:\n' + str(
+    logger.info('I merged my view with the one received obtaining the following:\n' + str(
         cyclon.partialView) + ".")
 
     m = Message(format_address(my_ip(), 5000), message.get('source'), to_send)
-    logger.info('/exchange-view: Returning this:\n' + str(m.to_json()) + ".")
+    logger.info('Returning this:\n' + str(m.to_json()) + ".")
     return str(m.to_json())
 
 
 if __name__ == '__main__':
     cyclon.bootstrap()
-    app.run(debug=False, use_reloader=False, host='0.0.0.0', threaded=True)
+    app.run(debug=False, use_reloader=False, host='0.0.0.0')
