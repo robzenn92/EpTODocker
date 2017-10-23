@@ -118,6 +118,23 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(self.partialView.size, self.partialView.limit)
 
     # Merge views should keep only the younger peers
+    def test_merge_views_with_self_ip(self):
+        self.partialView.add_peer(PodDescriptor("172.0.1.6", 1))
+        self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
+        self.partialView.add_peer(PodDescriptor("172.0.1.5", 4))
+        p = PartialView("172.0.1.9")
+        p.add_peer(PodDescriptor("172.0.1.3", 0))
+        p.add_peer(PodDescriptor(self.partialView.ip, 1))
+        p.add_peer(PodDescriptor("172.0.1.1", 4))
+        self.partialView.merge(p)
+        self.assertEqual(self.partialView.peer_list[0].ip, "172.0.1.3")
+        self.assertEqual(self.partialView.peer_list[1].ip, "172.0.1.6")
+        self.assertEqual(self.partialView.peer_list[2].ip, "172.0.1.4")
+        self.assertTrue((self.partialView.is_full()))
+        self.assertFalse(self.partialView.contains_ip(self.partialView.ip))
+        self.assertEqual(self.partialView.size, self.partialView.limit)
+
+    # Merge views should keep only the younger peers
     def test_merge_views_without_duplicates(self):
 
         self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))

@@ -101,16 +101,18 @@ class PartialView:
 
         # For each peer in the view I received
         for peer in partial_view.get_peer_list():
-            # If peer is not contained in my partialView
-            if not self.contains(peer):
-                # I add peer to the list (I cannot use self.add_peer because of the limit check)
-                self.peer_list.append(peer)
-                self.size += 1
-            else:
-                # I need to check which of them is older
-                duplicated = self.get_peer_by_ip(peer.ip)
-                if peer < duplicated:
-                    duplicated.age = peer.age
+            # Self ip is not allowed
+            if not peer.ip == self.ip:
+                # If peer is not contained in my partialView
+                if not self.contains(peer):
+                    # I add peer to the list (I cannot use self.add_peer because of the limit check)
+                    self.peer_list.append(peer)
+                    self.size += 1
+                else:
+                    # I need to check which of them is older
+                    duplicated = self.get_peer_by_ip(peer.ip)
+                    if peer < duplicated:
+                        duplicated.age = peer.age
 
         self.sort()
         self.size = min(self.limit, self.size)
