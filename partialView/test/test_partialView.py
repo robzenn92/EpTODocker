@@ -320,6 +320,8 @@ class TestStringMethods(unittest.TestCase):
         for peer in reply.get_peer_list():
             self.assertTrue(p1.contains(peer))
 
+        self.assertLessEqual(self.partialView.size, self.partialView.limit)
+
     # Test the exchange of views.
     # P1 plays the role of P while P2 plays the role of Q described in comments
     def test_exchange_views_2(self):
@@ -375,6 +377,8 @@ class TestStringMethods(unittest.TestCase):
         for peer in reply.get_peer_list():
             if peer != p1.ip:
                 self.assertTrue(p1.contains(peer))
+
+        self.assertLessEqual(self.partialView.size, self.partialView.limit)
 
     # Method get_oldest_peer should return a PodDescriptor
     def test_get_oldest_peer_should_return_none_if_empty_view(self):

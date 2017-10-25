@@ -51,8 +51,8 @@ def get_view():
 def get_k_view():
     global cyclon
     k = int(request.args.get('k'))
-    view = cyclon.partialView.select_neighbors(size=k)
-    # logger.info('/k-view: I am returning this:\n' + str(cyclon.partialView))
+    view = cyclon.partialView.sample(k)
+    logger.info('I am returning a k-view:\n' + str(cyclon.partialView))
     return str(view)
 
 
@@ -69,55 +69,15 @@ def exchange_view():
     # 1) I cast the received json into a PartialView
     message = json.loads(request.get_json())
     received_partial_view = PartialView.from_dict(message.get('data'))
-    logger.info('I got (from ' + message.get('source') + ') the following:\n' + str(received_partial_view) + ".")
-
-    try:
-        assert received_partial_view.size == received_partial_view.shuffle_length
-    except AssertionError:
-        logger.critical('AssertionError (received_partial_view.size == received_partial_view.shuffle_length)')
-        logger.critical('AssertionError (received_partial_view.size) was:\n' + str(received_partial_view.size))
-        logger.critical('AssertionError (received_partial_view.shuffle_length) was:\n' + str(received_partial_view.shuffle_length))
-        raise
-
-    # 2) I check whether there is the source ip within my partialView. If so, I need to avoid it.
-    # if cyclon.partialView.contains_ip(received_partial_view.ip):
-    #     to_send = cyclon.partialView.select_neighbors_for_reply(
-    #       cyclon.partialView.get_peer_by_ip(received_partial_view.ip)
-    #     )
-    # else:
-    #     to_send = cyclon.partialView.select_neighbors_for_reply()
+    logger.info('I got (from ' + message.get('source') + ') the following:\n' + str(received_partial_view))
 
     # 2) I send a subset of my partial view no matter if the source ip is contained in it
     to_send = cyclon.partialView.select_neighbors_for_reply()
     logger.info('I will send (to ' + message.get('source') + ') the following:\n' + str(to_send) + ".")
 
-    try:
-        assert to_send.size == received_partial_view.size
-    except AssertionError:
-        logger.critical('AssertionError (to_send.size == received_partial_view.size)')
-        logger.critical('AssertionError (to_send.size) was:\n' + str(to_send.size))
-        logger.critical('AssertionError (received_partial_view.size) was:\n' + str(received_partial_view.size))
-        raise
-
-    # 3) I remove from my view the peers I want to send
-    for peer in to_send.get_peer_list():
-        cyclon.partialView.remove_peer(peer)
-    logger.info('After having removed:\n' + str(cyclon.partialView))
-
-    # 4) I merge current partial view with the one just received
+    # 3) I merge current partial view with the one just received
     cyclon.partialView.merge(to_send, received_partial_view)
     logger.info('After merged:\n' + str(cyclon.partialView))
-
-    # # 5) If there is still space in my view I add the peers I removed before
-    # for peer in to_send.get_peer_list():
-    #     # If peer is not contained in my view it is going to be added
-    #     # Otherwise its age is updated with the minimum value between the two descriptors
-    #     if not cyclon.partialView.contains(peer):
-    #         cyclon.partialView.add_peer(peer)
-    #     else:
-    #         p = cyclon.partialView.get_peer_by_ip(peer.ip)
-    #         p.age = min(p.age, peer.age)
-    # logger.info('I merged my view with the one received. The result is:\n' + str(cyclon.partialView) + ".")
 
     m = Message(format_address(my_ip(), 5000), message.get('source'), to_send)
     logger.info('Returning this:\n' + str(m.to_json()))

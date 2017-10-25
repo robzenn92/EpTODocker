@@ -108,7 +108,7 @@ class PartialView:
     # and secondly replacing entries among the ones sent to Q.
     def merge(self, partial_view_sent, partial_view_received):
 
-        # I remove myself from the received partial view
+        # Discards entries pointing at P and entries already contained in P's cache.
         partial_view_received.remove_peer_ip(self.ip)
         partial_view_sent.remove_peer_ip(self.ip)
 
@@ -128,31 +128,6 @@ class PartialView:
                 self.remove_peer(can_be_replaced[i - how_many])
                 self.add_peer(unknown[i])
                 i += 1
-
-        # # For each peer in the view I received
-        # for peer in partial_view.get_peer_list():
-        #     # Self ip is not allowed
-        #     if not peer.ip == self.ip:
-        #         # If peer is not contained in my partialView
-        #         if not self.contains(peer):
-        #             # I add peer to the list (I cannot use self.add_peer because of the limit check)
-        #             self.peer_list.append(peer)
-        #             self.size += 1
-        #         else:
-        #             # I need to check which of them is older
-        #             duplicated = self.get_peer_by_ip(peer.ip)
-        #             duplicated.age = min(peer.age, duplicated.age)
-
-
-        # 9) If there is still space in my view I add the peers I removed before
-        # for peer in neighbors.get_peer_list():
-        #     # If peer is not contained in my view it is going to be added
-        #     # Otherwise its age is updated with the minimum value between the two descriptors
-        #     if not self.partialView.contains(peer):
-        #         self.partialView.add_peer(peer)
-        #     else:
-        #         p = self.partialView.get_peer_by_ip(peer.ip)
-        #         p.age = min(p.age, peer.age)
 
         self.sort()
         # self.size = min(self.limit, self.size)
