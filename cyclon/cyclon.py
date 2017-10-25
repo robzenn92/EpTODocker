@@ -64,17 +64,13 @@ class Cyclon:
 
     def shuffle_partial_view(self):
 
-        # Like in basic shuffling, the receiving node Q replies by sending back a random subset of at most l neighbors,
-        # and updates its own cache to accommodate all received entries.
-        # It does not increase, though, any entry's age until its own turn comes to initiate a shuffle.
-
         # PartialView's size should always be greater than shuffle_length
-        try:
-            assert self.partialView.size >= self.partialView.shuffle_length
-        except AssertionError:
-            self.logger.critical('AssertionError (self.partialView.size >= self.partialView.shuffle_length)' + str(self.partialView))
-            self.logger.critical('AssertionError (self.partialView) was:\n' + str(self.partialView))
-            raise
+        # try:
+        #     assert self.partialView.size >= self.partialView.shuffle_length
+        # except AssertionError:
+        #     self.logger.critical('AssertionError (self.partialView.size >= self.partialView.shuffle_length)' + str(self.partialView))
+        #     self.logger.critical('AssertionError (self.partialView) was:\n' + str(self.partialView))
+        #     raise
 
         # 1) Increase by one the age of all neighbors
         self.partialView.increment()
@@ -90,13 +86,13 @@ class Cyclon:
         self.logger.info('Selected neighbors + myself (will be sent to ' + oldest.ip + '):\n' + str(neighbors))
 
         # I should always send shuffle_length neighbors
-        try:
-            assert neighbors.size == self.partialView.shuffle_length
-        except AssertionError:
-            self.logger.critical('AssertionError (neighbors.size == self.partialView.shuffle_length)')
-            self.logger.critical('AssertionError (self.neighbors) was:\n' + str(self.neighbors))
-            self.logger.critical('AssertionError (self.partialView.shuffle_length) was:\n' + str(self.partialView.shuffle_length))
-            raise
+        # try:
+        #     assert neighbors.size == self.partialView.shuffle_length
+        # except AssertionError:
+        #     self.logger.critical('AssertionError (neighbors.size == self.partialView.shuffle_length)')
+        #     self.logger.critical('AssertionError (self.neighbors) was:\n' + str(self.neighbors))
+        #     self.logger.critical('AssertionError (self.partialView.shuffle_length) was:\n' + str(self.partialView.shuffle_length))
+        #     raise
 
         try:
 

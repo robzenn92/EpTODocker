@@ -57,13 +57,13 @@ def get_k_view():
 
 
 # Given a message containing a PartialView withing the data field
-# exchange-view allows two peers to exchange each other subset of their partial views.
 # Like in basic shuffling, the receiving peer replies by sending back a random subset of at most l neighbors.
 # It then updates its own cache to accommodate all received entries.
+# It does not increase, though, any entry's age until its own turn comes to initiate a shuffle.
 @app.route('/exchange-view', methods=['POST'])
 def exchange_view():
-    global cyclon
 
+    global cyclon
     logger.info("My view before the exchange is:\n" + str(cyclon.partialView))
 
     # 1) I cast the received json into a PartialView

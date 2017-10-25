@@ -206,6 +206,64 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(self.partialView.peer_list[1].ip, "172.0.1.5")
         self.assertEqual(self.partialView.peer_list[2].ip, "172.0.1.4")
 
+    # Method sample should return an empty list if view is empty
+    def test_sample_should_return_empty_list_if_empty_view(self):
+        sample = self.partialView.sample(3)
+        self.assertEqual(len(sample), 0)
+        self.assertEqual(sample, [])
+
+    # Method sample should return a list of size element if the view's size is less than the limit given as parameter
+    def test_sample_should_return_less_than_limit_peers_if_size_less_than_limit(self):
+        self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
+        self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
+        size = self.partialView.size
+        sample = self.partialView.sample(3)
+        self.assertEqual(len(sample), size)
+
+    # Method sample should return a list of limit peers despite the size of the the view is greater then limit
+    def test_sample_should_return_no_more_than_limit_peers(self):
+        self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
+        self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
+        self.partialView.add_peer(PodDescriptor("172.0.1.9", 4))
+        limit = 2
+        size = self.partialView.size
+        sample = self.partialView.sample(limit)
+        self.assertNotEqual(limit, size)
+        self.assertEqual(len(sample), limit)
+
+    # Method sample should return a list of 1 peer and avoid the peer given as parameter
+    def test_sample_with_avoid_peer_more_than_limit(self):
+        to_avoid = PodDescriptor("172.0.1.9", 4)
+        self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
+        self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
+        self.partialView.add_peer(to_avoid)
+        limit = 1
+        sample = self.partialView.sample(limit, to_avoid)
+        self.assertEqual(len(sample), limit)
+        self.assertFalse(to_avoid in sample)
+
+    # Method sample should return a list of 2 peers and avoid the peer given as parameter
+    def test_sample_with_avoid_peer_less_than_limit(self):
+        to_avoid = PodDescriptor("172.0.1.9", 4)
+        self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
+        self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
+        self.partialView.add_peer(to_avoid)
+        limit = 3
+        sample = self.partialView.sample(limit, to_avoid)
+        self.assertEqual(len(sample), 2)
+        self.assertFalse(to_avoid in sample)
+
+    # Method sample should return a list of 3 peers if the peer to avoid is not contained in the view
+    def test_sample_with_avoid_peer_not_in_view(self):
+        to_avoid = PodDescriptor("172.0.1.9", 4)
+        self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
+        self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
+        self.partialView.add_peer(PodDescriptor("172.0.1.10", 8))
+        limit = 3
+        sample = self.partialView.sample(limit, to_avoid)
+        self.assertEqual(len(sample), limit)
+        self.assertFalse(to_avoid in sample)
+
     # Test the exchange of views.
     # P1 plays the role of P while P2 plays the role of Q described in comments
     def test_exchange_views(self):
@@ -318,88 +376,6 @@ class TestStringMethods(unittest.TestCase):
             if peer != p1.ip:
                 self.assertTrue(p1.contains(peer))
 
-
-    # # Merge views should keep only the younger peers
-    # def test_merge_views(self):
-    #     self.partialView.add_peer(PodDescriptor("172.0.1.6", 1))
-    #     self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
-    #     self.partialView.add_peer(PodDescriptor("172.0.1.5", 4))
-    #     p = PartialView("172.0.1.9")
-    #     p.add_peer(PodDescriptor("172.0.1.3", 0))
-    #     p.add_peer(PodDescriptor("172.0.1.2", 1))
-    #     p.add_peer(PodDescriptor("172.0.1.1", 4))
-    #     self.partialView.merge(p)
-    #     self.assertEqual(self.partialView.peer_list[0].ip, "172.0.1.3")
-    #     self.assertEqual(self.partialView.peer_list[1].ip, "172.0.1.6")
-    #     self.assertEqual(self.partialView.peer_list[2].ip, "172.0.1.2")
-    #     self.assertTrue((self.partialView.is_full()))
-    #     self.assertEqual(self.partialView.size, self.partialView.limit)
-    #     self.assertEqual(self.partialView.size, len(self.partialView.peer_list))
-    #
-    # # Merge views should keep only the younger peers
-    # def test_merge_views_with_self_ip(self):
-    #     self.partialView.add_peer(PodDescriptor("172.0.1.6", 1))
-    #     self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
-    #     self.partialView.add_peer(PodDescriptor("172.0.1.5", 4))
-    #     p = PartialView("172.0.1.9")
-    #     p.add_peer(PodDescriptor("172.0.1.3", 0))
-    #     p.add_peer(PodDescriptor(self.partialView.ip, 1))
-    #     p.add_peer(PodDescriptor("172.0.1.1", 4))
-    #     self.partialView.merge(p)
-    #     self.assertEqual(self.partialView.peer_list[0].ip, "172.0.1.3")
-    #     self.assertEqual(self.partialView.peer_list[1].ip, "172.0.1.6")
-    #     self.assertEqual(self.partialView.peer_list[2].ip, "172.0.1.4")
-    #     self.assertFalse(self.partialView.contains_ip(self.partialView.ip))
-    #     self.assertTrue((self.partialView.is_full()))
-    #     self.assertEqual(self.partialView.size, self.partialView.limit)
-    #     self.assertEqual(self.partialView.size, len(self.partialView.peer_list))
-    #
-    # # Merge views should keep only the younger peers
-    # def test_merge_views_without_duplicates(self):
-    #
-    #     self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
-    #     self.assertEqual(self.partialView.size, 1)
-    #     self.assertEqual(len(self.partialView.peer_list), self.partialView.size)
-    #
-    #     p = PartialView("172.0.2.0")
-    #     p.add_peer(PodDescriptor("172.0.1.8", 1))
-    #     p.add_peer(PodDescriptor("172.0.1.7", 2))
-    #     p.add_peer(PodDescriptor("172.0.1.6", 3))
-    #
-    #     self.partialView.merge(p)
-    #     self.assertTrue(self.partialView.is_full())
-    #     self.assertEqual(self.partialView.size, 3)
-    #     self.assertEqual(self.partialView.size, len(self.partialView.peer_list))
-    #     self.assertEqual(self.partialView.size, self.partialView.limit)
-    #
-    #     self.assertTrue(self.partialView.contains_ip("172.0.1.8"))
-    #     self.assertTrue(self.partialView.contains_ip("172.0.1.7"))
-    #     self.assertTrue(self.partialView.contains_ip("172.0.1.5"))
-    #     self.assertFalse(self.partialView.contains_ip("172.0.1.6"))
-    #
-    # # Merge views should keep only the younger peers and avoid duplicates
-    # def test_merge_views_with_duplicates(self):
-    #
-    #     self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
-    #     self.assertEqual(self.partialView.size, 1)
-    #     self.assertEqual(len(self.partialView.peer_list), self.partialView.size)
-    #
-    #     p = PartialView("172.0.2.0")
-    #     p.add_peer(PodDescriptor("172.0.1.5", 1))
-    #     p.add_peer(PodDescriptor("172.0.1.7", 2))
-    #     p.add_peer(PodDescriptor("172.0.1.6", 3))
-    #
-    #     self.partialView.merge(p)
-    #     self.assertTrue(self.partialView.is_full())
-    #     self.assertEqual(self.partialView.size, 3)
-    #     self.assertEqual(self.partialView.size, len(self.partialView.peer_list))
-    #     self.assertEqual(self.partialView.size, self.partialView.limit)
-    #
-    #     self.assertTrue(self.partialView.contains_ip("172.0.1.5"))
-    #     self.assertTrue(self.partialView.contains_ip("172.0.1.7"))
-    #     self.assertTrue(self.partialView.contains_ip("172.0.1.6"))
-    #     self.assertEqual(self.partialView.get_peer_by_ip("172.0.1.5").age, 1)
-
     # Method get_oldest_peer should return a PodDescriptor
     def test_get_oldest_peer_should_return_none_if_empty_view(self):
         oldest = self.partialView.get_oldest_peer()
@@ -473,12 +449,6 @@ class TestStringMethods(unittest.TestCase):
         self.partialView.add_peer(PodDescriptor("172.0.1.5", 4))
         neighbors = self.partialView.select_neighbors_for_reply(oldest)
         self.assertFalse(neighbors.contains(oldest))
-
-    # def test_select_k_neighbors(self):
-    #     for ip in self.ips:
-    #         self.partialView.add_peer_ip(ip)
-    #     partial_view = self.partialView.select_neighbors()
-    #     self.assertEqual(partial_view.size, self.partialView.shuffle_length)
 
     def test_empty_partial_view_to_json(self):
         jsonized = self.partialView.to_json()

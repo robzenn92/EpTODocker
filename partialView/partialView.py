@@ -158,59 +158,37 @@ class PartialView:
         # self.size = min(self.limit, self.size)
         # del self.peer_list[self.size:]
 
-    # Returns a PartialView with one free slot for myself.
+    # Returns a PartialView with one free slot for myself. It will be used as request
     def select_neighbors_for_request(self, avoid_peer=None):
 
-        p = PartialView(self.ip, self.shuffle_length, self.shuffle_length)
-        peer_list = [peer for peer in self.peer_list if peer != avoid_peer]
+        # I want a sample of at max (self.shuffle_length - 1) peers without avoid_peer
+        sample = self.sample(self.shuffle_length - 1, avoid_peer)
 
-        # Here is the difference
-        size = self.shuffle_length - 1
+        # Note that the PartialView's limit is not self.shuffle_length because size might be less than that
+        return PartialView(self.ip, len(sample) + 1, len(sample) + 1, sample)
 
-        # The number of peers should always be greater than or equal to (self.shuffle_length - 1)
-        # try:
-        #     assert len(peer_list) >= size
-        # except AssertionError:
-        #     logger.critical('AssertionError (len(peer_list) >= size)')
-        #     logger.critical('AssertionError (peer_list) was:\n' + str(peer_list))
-        #     logger.critical('AssertionError (size) was:\n' + str(size))
-        #     raise
-
-        # Here is the difference
-        while p.size < size:
-            random_peer = random.choice(list(peer_list))
-            if not p.contains(random_peer):
-                p.add_peer(random_peer)
-            peer_list.remove(random_peer)
-        return p
-
-    # Returns a full PartialView which has limit = self.shuffle_length = size
+    # Returns a full PartialView will be used as reply
     def select_neighbors_for_reply(self, avoid_peer=None):
 
-        p = PartialView(self.ip, self.shuffle_length, self.shuffle_length)
+        # I want a sample of at max self.shuffle_length peers without avoid_peer
+        sample = self.sample(self.shuffle_length, avoid_peer)
+
+        # Note that the PartialView's limit is not self.shuffle_length because size might be less than that
+        return PartialView(self.ip, len(sample), len(sample), sample)
+
+    # Returns a random sample of peers of size less than or equal to limit
+    def sample(self, limit, avoid_peer=None):
+
+        sample = []
         peer_list = [peer for peer in self.peer_list if peer != avoid_peer]
+        size = min(limit, len(peer_list))
 
-        # Best effort approach :)
-        # If len(peer_list) is not equal to self.shuffle_length, let add it..
-        if len(peer_list) < self.shuffle_length:
-            peer_list.append(avoid_peer)
-
-        # The number of peers should always be greater than or equal to (self.shuffle_length - 1)
-        # try:
-        #     assert len(peer_list) >= self.shuffle_length
-        # except AssertionError:
-        #     logger.critical('AssertionError (len(peer_list) >= size)')
-        #     logger.critical('AssertionError (peer_list) was:\n' + str(peer_list))
-        #     logger.critical('AssertionError (size) was:\n' + str(self.shuffle_length))
-        #     raise
-
-        # Here is the difference
-        while not p.is_full():
+        while len(sample) < size:
             random_peer = random.choice(list(peer_list))
-            if not p.contains(random_peer):
-                p.add_peer(random_peer)
+            if random_peer not in sample:
+                sample.append(random_peer)
             peer_list.remove(random_peer)
-        return p
+        return sample
 
     @classmethod
     def from_dict(cls, a_dict):
