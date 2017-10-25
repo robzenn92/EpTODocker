@@ -11,3 +11,4 @@ apscheduler
 simplejson
 numpy
 nose2
+structlog

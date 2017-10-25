@@ -12,8 +12,8 @@ make build
 cd ..
 
 kubectl create -f kubernetes_config/es-controller.yaml
-kubectl create -f kubernetes_config/es-service.yaml
 kubectl create -f kubernetes_config/kibana-controller.yaml
+kubectl create -f kubernetes_config/es-service.yaml
 kubectl create -f kubernetes_config/kibana-service.yaml
 
 kubectl create configmap fluentd-config --from-file=kubernetes_config/fluentd_config/td-agent.conf --namespace=kube-system

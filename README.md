@@ -20,6 +20,8 @@ $ sh setup.sh
 
 ## Quick start with minikube
 
+[Minikube](https://github.com/kubernetes/minikube) is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a VM on your laptop for users looking to try out Kubernetes or develop with it day-to-day.
+
 Please, be sure that docker is running. In order to start up a single-node cluster run:
 
 ```
@@ -53,11 +55,13 @@ Kubectl is now configured to use the cluster.
 To check whether there is a single-node cluster up and running, we expect the following:
 
 ```
-$ minikube ip
-192.168.99.100
+$ minikube status
+minikube: Running
+cluster: Running
+kubectl: Correctly Configured: pointing to minikube-vm at 192.168.99.100
 ```
 
-In order to stop minikube, just run:
+Once the cluster is running you can interact with it using kubectl commands. In order to stop minikube, just run:
 ```
 $ minikube stop
 ```

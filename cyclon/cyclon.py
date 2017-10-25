@@ -6,6 +6,7 @@ import time
 import json
 import requests
 from os import environ
+from requests import Timeout
 from helpers import format_address
 from kubernetesClient import KubernetesClient
 from messages.message import Message
@@ -67,46 +68,80 @@ class Cyclon:
         # and updates its own cache to accommodate all received entries.
         # It does not increase, though, any entry's age until its own turn comes to initiate a shuffle.
 
+        # PartialView's size should always be greater than shuffle_length
+        try:
+            assert self.partialView.size >= self.partialView.shuffle_length
+        except AssertionError:
+            self.logger.critical('AssertionError (self.partialView.size >= self.partialView.shuffle_length)' + str(self.partialView))
+            self.logger.critical('AssertionError (self.partialView) was:\n' + str(self.partialView))
+            raise
+
         # 1) Increase by one the age of all neighbors
         self.partialView.increment()
-        self.logger.info('Partial View: ' + str(self.partialView))
+        self.logger.info('My partialView:\n' + str(self.partialView))
         # 2) Select neighbor Q with the highest age among all neighbors.
         oldest = self.partialView.get_oldest_peer()
         self.logger.info('Selected oldest: ' + str(oldest))
         # 3) Select l - 1 other random neighbors (meaning avoid oldest).
-        neighbors = self.partialView.select_neighbors(oldest)
-        self.logger.info('Selected neighbors: ' + str(neighbors))
+        neighbors = self.partialView.select_neighbors_for_request(oldest)
+        self.logger.info('Selected neighbors:\n' + str(neighbors))
         # 4) Replace Q's entry with a new entry of age 0 and with P's address.
         neighbors.add_peer_ip(self.ip, allow_self_ip=True)
-        self.logger.info('Selected neighbors + myself (will be sent to ' + oldest.ip + '): ' + str(neighbors))
+        self.logger.info('Selected neighbors + myself (will be sent to ' + oldest.ip + '):\n' + str(neighbors))
 
-        # 5) Send the updated subset to peer Q.
-        response = json.loads(self.send_message(oldest.ip, 'exchange-view', neighbors))
-        received_partial_view = PartialView.from_dict(response.get('data'))
-        self.logger.info('I received (from ' + oldest.ip + '): ' + str(received_partial_view))
+        # I should always send shuffle_length neighbors
+        try:
+            assert neighbors.size == self.partialView.shuffle_length
+        except AssertionError:
+            self.logger.critical('AssertionError (neighbors.size == self.partialView.shuffle_length)')
+            self.logger.critical('AssertionError (self.neighbors) was:\n' + str(self.neighbors))
+            self.logger.critical('AssertionError (self.partialView.shuffle_length) was:\n' + str(self.partialView.shuffle_length))
+            raise
 
-        # I remove the oldest
-        self.logger.info('My view now: ' + str(self.partialView))
-        self.partialView.remove_peer(oldest)
-        self.logger.info('My view after partialView.remove_peer(oldest): ' + str(self.partialView))
-        for peer in neighbors.get_peer_list():
-            self.partialView.remove_peer(peer)
-        self.logger.info('I removed neighbors from my view: ' + str(self.partialView))
+        try:
 
-        self.partialView.merge(received_partial_view)
-        self.logger.info('My view after partialView.merge(received_partial_view): ' + str(self.partialView))
+            # 5) Send the updated subset to peer Q.
+            response = json.loads(self.send_message(oldest.ip, 'exchange-view', neighbors))
+            received_partial_view = PartialView.from_dict(response.get('data'))
+            self.logger.info('I received (from ' + oldest.ip + '):\n' + str(received_partial_view))
 
-        for peer in neighbors.get_peer_list():
-            if self.partialView.contains(peer):
-                p = self.partialView.get_peer_by_ip(peer.ip)
-                p.age = min(p.age, peer.age)
-            else:
-                self.partialView.add_peer(peer)
+            # 6) I remove the oldest peer from my view
+            self.partialView.remove_peer(oldest)
+            self.logger.info('My partialView after removing oldest:\n' + str(self.partialView))
 
-        self.logger.info('I merged my view with the one received and after loop: ' + str(self.partialView))
+            # 7) I remove neighbors from my view
+            # for peer in neighbors.get_peer_list():
+            #     self.partialView.remove_peer(peer)
+            # self.logger.info('My partialView after removing neighbors:\n' + str(self.partialView))
+
+            # 8) I merge my view with the one just received
+            self.partialView.merge(neighbors, received_partial_view)
+            self.logger.info('My partialView after merging:\n' + str(self.partialView))
+
+            # 9) If there is still space in my view I add the peers I removed before
+            # for peer in neighbors.get_peer_list():
+            #     # If peer is not contained in my view it is going to be added
+            #     # Otherwise its age is updated with the minimum value between the two descriptors
+            #     if not self.partialView.contains(peer):
+            #         self.partialView.add_peer(peer)
+            #     else:
+            #         p = self.partialView.get_peer_by_ip(peer.ip)
+            #         p.age = min(p.age, peer.age)
+
+            self.logger.info('My partialView after adding neighbors:\n' + str(self.partialView))
+
+        except Timeout:
+            self.logger.info('TimeoutException: Request to ' + str(oldest.ip) + 'timed out.')
+
+        # PartialView's size should always be greater than shuffle_length
+        try:
+            assert self.partialView.size >= self.partialView.shuffle_length
+        except AssertionError:
+            self.logger.critical('AssertionError (self.partialView.size >= self.partialView.shuffle_length)')
+            self.logger.critical('AssertionError (self.partialView) was:\n' + str(self.partialView))
+            raise
 
     def send_message(self, destination_ip, path, data):
         m = Message(format_address(self.ip, 5000), format_address(destination_ip, 5000), data)
-        self.logger.info('I am sending a message: ' + str(m.to_json()))
         ret = requests.post(m.destination + '/' + path, json=m.to_json(), timeout=5)
         return ret.content
