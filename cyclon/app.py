@@ -86,4 +86,4 @@ def exchange_view():
 
 if __name__ == '__main__':
     cyclon.bootstrap()
-    app.run(debug=False, use_reloader=False, host='0.0.0.0')
+    app.run(debug=False, use_reloader=False, host='0.0.0.0', port=5000)

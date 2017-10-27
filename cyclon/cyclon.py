@@ -1,12 +1,12 @@
 #!/usr/bin/env python2
 
-import logging
 import random
 import time
 import json
 import requests
 from os import environ
 from requests import Timeout
+from configuration import logger
 from helpers import format_address
 from kubernetesClient import KubernetesClient
 from messages.message import Message
@@ -18,7 +18,6 @@ class Cyclon:
 
     def __init__(self):
         self.ip = environ['MY_POD_IP']
-        self.logger = logging.getLogger()
         self.k8s = KubernetesClient()
         self.partialView = PartialView(self.ip)
 
@@ -28,11 +27,11 @@ class Cyclon:
 
     def bootstrap_exponential_backoff(self, initial_delay, delay):
 
-        self.logger.info("Bootstrapping cyclon's view: " + str(self.partialView))
+        logger.info("Bootstrapping cyclon's view: " + str(self.partialView))
         time.sleep(initial_delay)
 
         ips = self.k8s.list_pods_ips_by_field_selector(label_selector="app=epto", field_selector="status.phase=Running")
-        self.logger.info('There are ' + str(len(ips)) + " Pods running")
+        logger.info('There are ' + str(len(ips)) + " Pods running")
 
         # Exponential backoff starts in case the number of running pods is lower than the partialView's limit.
         # TODO: Did I consider also that some pods might not be ready yet?
@@ -42,7 +41,7 @@ class Cyclon:
             delay *= 2
             time.sleep(delay)
             ips = self.k8s.list_pods_ips_by_field_selector(label_selector="app=epto", field_selector="status.phase=Running")
-            self.logger.info('There are ' + str(len(ips)) + " Pods running")
+            logger.info('There are ' + str(len(ips)) + " Pods running")
 
         # I populate the PartialView and I avoid to consider myself
         ips.remove(self.ip)
@@ -51,14 +50,14 @@ class Cyclon:
             # TODO: REPLACE WITH self.partialView.add_peer_ip(random_ip)
             self.partialView.add_peer(PodDescriptor(random_ip, random.randint(0, 9)))
 
-        self.logger.info('My view after bootstrap is:\n' + str(self.partialView))
+        logger.info('My view after bootstrap is:\n' + str(self.partialView))
 
     def schedule_change(self, initial_delay, interval):
 
         initial_delay = random.randint(0, initial_delay)
         time.sleep(initial_delay)
 
-        scheduler = BackgroundScheduler(logger=self.logger)
+        scheduler = BackgroundScheduler(logger=logger)
         scheduler.add_job(self.shuffle_partial_view, 'interval', seconds=interval, max_instances=1)
         scheduler.start()
 
@@ -66,35 +65,35 @@ class Cyclon:
 
         # 1) Increase by one the age of all neighbors
         self.partialView.increment()
-        self.logger.info('My partialView:\n' + str(self.partialView))
+        logger.info('My partialView:\n' + str(self.partialView))
         # 2) Select neighbor Q with the highest age among all neighbors.
         oldest = self.partialView.get_oldest_peer()
-        self.logger.info('Selected oldest: ' + str(oldest))
+        logger.info('Selected oldest: ' + str(oldest))
         # 3) Select l - 1 other random neighbors (meaning avoid oldest).
         neighbors = self.partialView.select_neighbors_for_request(oldest)
-        self.logger.info('Selected neighbors:\n' + str(neighbors))
+        logger.info('Selected neighbors:\n' + str(neighbors))
         # 4) Replace Q's entry with a new entry of age 0 and with P's address.
         neighbors.add_peer_ip(self.ip, allow_self_ip=True)
-        self.logger.info('Selected neighbors + myself (will be sent to ' + oldest.ip + '):\n' + str(neighbors))
+        logger.info('Selected neighbors + myself (will be sent to ' + oldest.ip + '):\n' + str(neighbors))
 
         try:
 
             # 5) Send the updated subset to peer Q.
             response = json.loads(self.send_message(oldest.ip, 'exchange-view', neighbors))
             received_partial_view = PartialView.from_dict(response.get('data'))
-            self.logger.info('I received (from ' + oldest.ip + '):\n' + str(received_partial_view))
+            logger.info('I received (from ' + oldest.ip + '):\n' + str(received_partial_view))
 
             # 6) I remove the oldest peer from my view
             self.partialView.remove_peer(oldest)
-            self.logger.info('My partialView after removing oldest:\n' + str(self.partialView))
+            logger.info('My partialView after removing oldest:\n' + str(self.partialView))
 
             # 7) I merge my view with the one just received
             self.partialView.merge(neighbors, received_partial_view)
-            self.logger.info('My partialView after merging:\n' + str(self.partialView))
+            logger.info('My partialView after merging:\n' + str(self.partialView))
 
         except Timeout:
 
-            self.logger.info('TimeoutException: Request to ' + str(oldest.ip) + 'timed out.')
+            logger.info('TimeoutException: Request to ' + str(oldest.ip) + 'timed out.')
 
     def send_message(self, destination_ip, path, data):
         m = Message(format_address(self.ip, 5000), format_address(destination_ip, 5000), data)
