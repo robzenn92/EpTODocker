@@ -51,9 +51,9 @@ def get_view():
 def get_k_view():
     global cyclon
     k = int(request.args.get('k'))
-    view = cyclon.partialView.sample(k)
+    list_ips = cyclon.partialView.sample_ips(k)
     logger.info('I am returning a k-view:\n' + str(cyclon.partialView))
-    return str(view)
+    return json.dumps(list_ips)
 
 
 # Given a message containing a PartialView withing the data field

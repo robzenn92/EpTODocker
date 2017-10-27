@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 
-import json
 import os
+import json
 import unittest
 from partialView.partialView import PartialView, PodDescriptor
 
@@ -206,63 +206,75 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(self.partialView.peer_list[1].ip, "172.0.1.5")
         self.assertEqual(self.partialView.peer_list[2].ip, "172.0.1.4")
 
-    # Method sample should return an empty list if view is empty
-    def test_sample_should_return_empty_list_if_empty_view(self):
-        sample = self.partialView.sample(3)
+    # Method sample_descriptors should return an empty list if view is empty
+    def test_sample_descriptors_should_return_empty_list_if_empty_view(self):
+        sample = self.partialView.sample_descriptors(3)
         self.assertEqual(len(sample), 0)
         self.assertEqual(sample, [])
+        self.assertTrue(isinstance(sample, list))
 
-    # Method sample should return a list of size element if the view's size is less than the limit given as parameter
-    def test_sample_should_return_less_than_limit_peers_if_size_less_than_limit(self):
+    # Method sample_descriptors should return a list of size element if the view's size is less than the limit given as parameter
+    def test_sample_descriptors_should_return_less_than_limit_peers_if_size_less_than_limit(self):
         self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
         self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
         size = self.partialView.size
-        sample = self.partialView.sample(3)
+        sample = self.partialView.sample_descriptors(3)
         self.assertEqual(len(sample), size)
 
-    # Method sample should return a list of limit peers despite the size of the the view is greater then limit
-    def test_sample_should_return_no_more_than_limit_peers(self):
+    # Method sample_descriptors should return a list of limit peers despite the size of the the view is greater then limit
+    def test_sample_descriptors_should_return_no_more_than_limit_peers(self):
         self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
         self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
         self.partialView.add_peer(PodDescriptor("172.0.1.9", 4))
         limit = 2
         size = self.partialView.size
-        sample = self.partialView.sample(limit)
+        sample = self.partialView.sample_descriptors(limit)
         self.assertNotEqual(limit, size)
         self.assertEqual(len(sample), limit)
 
-    # Method sample should return a list of 1 peer and avoid the peer given as parameter
-    def test_sample_with_avoid_peer_more_than_limit(self):
+    # Method sample_descriptors should return a list of 1 peer and avoid the peer given as parameter
+    def test_sample_descriptors_with_avoid_peer_more_than_limit(self):
         to_avoid = PodDescriptor("172.0.1.9", 4)
         self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
         self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
         self.partialView.add_peer(to_avoid)
         limit = 1
-        sample = self.partialView.sample(limit, to_avoid)
+        sample = self.partialView.sample_descriptors(limit, to_avoid)
         self.assertEqual(len(sample), limit)
         self.assertFalse(to_avoid in sample)
 
-    # Method sample should return a list of 2 peers and avoid the peer given as parameter
-    def test_sample_with_avoid_peer_less_than_limit(self):
+    # Method sample_descriptors should return a list of 2 peers and avoid the peer given as parameter
+    def test_sample_descriptors_with_avoid_peer_less_than_limit(self):
         to_avoid = PodDescriptor("172.0.1.9", 4)
         self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
         self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
         self.partialView.add_peer(to_avoid)
         limit = 3
-        sample = self.partialView.sample(limit, to_avoid)
+        sample = self.partialView.sample_descriptors(limit, to_avoid)
         self.assertEqual(len(sample), 2)
         self.assertFalse(to_avoid in sample)
 
-    # Method sample should return a list of 3 peers if the peer to avoid is not contained in the view
-    def test_sample_with_avoid_peer_not_in_view(self):
+    # Method sample_descriptors should return a list of 3 peers if the peer to avoid is not contained in the view
+    def test_sample_descriptors_with_avoid_peer_not_in_view(self):
         to_avoid = PodDescriptor("172.0.1.9", 4)
         self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
         self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
         self.partialView.add_peer(PodDescriptor("172.0.1.10", 8))
         limit = 3
-        sample = self.partialView.sample(limit, to_avoid)
+        sample = self.partialView.sample_descriptors(limit, to_avoid)
         self.assertEqual(len(sample), limit)
         self.assertFalse(to_avoid in sample)
+
+    # Method sample_ips should return a list of 3 ips
+    def test_sample_ips_should_return_a_list_of_ips(self):
+        self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
+        self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
+        self.partialView.add_peer(PodDescriptor("172.0.1.10", 8))
+        limit = 3
+        sample = self.partialView.sample_ips(limit)
+        self.assertIn("172.0.1.5", sample)
+        self.assertIn("172.0.1.4", sample)
+        self.assertIn("172.0.1.10", sample)
 
     # Test the exchange of views.
     # P1 plays the role of P while P2 plays the role of Q described in comments

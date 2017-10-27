@@ -140,7 +140,7 @@ class PartialView(object):
     def select_neighbors_for_request(self, avoid_peer=None):
 
         # I want a sample of at max (self.shuffle_length - 1) peers without avoid_peer
-        sample = self.sample(self.shuffle_length - 1, avoid_peer)
+        sample = self.sample_descriptors(self.shuffle_length - 1, avoid_peer)
 
         # Note that the PartialView's limit is not self.shuffle_length because size might be less than that
         return PartialView(self.ip, len(sample) + 1, len(sample) + 1, sample)
@@ -149,13 +149,13 @@ class PartialView(object):
     def select_neighbors_for_reply(self, avoid_peer=None):
 
         # I want a sample of at max self.shuffle_length peers without avoid_peer
-        sample = self.sample(self.shuffle_length, avoid_peer)
+        sample = self.sample_descriptors(self.shuffle_length, avoid_peer)
 
         # Note that the PartialView's limit is not self.shuffle_length because size might be less than that
         return PartialView(self.ip, len(sample), len(sample), sample)
 
     # Returns a random sample of peers of size less than or equal to limit
-    def sample(self, limit, avoid_peer=None):
+    def sample_descriptors(self, limit, avoid_peer=None):
 
         sample = []
         peer_list = [peer for peer in self.peer_list if peer != avoid_peer]
@@ -167,6 +167,9 @@ class PartialView(object):
                 sample.append(random_peer)
             peer_list.remove(random_peer)
         return sample
+
+    def sample_ips(self, limit):
+        return [peer.ip for peer in self.sample_descriptors(limit)]
 
     @classmethod
     def from_dict(cls, a_dict):
