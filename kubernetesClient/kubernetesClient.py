@@ -8,7 +8,7 @@ from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
 
-class KubernetesClient:
+class KubernetesClient(object):
 
     # -------------------
 

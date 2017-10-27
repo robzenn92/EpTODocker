@@ -3,7 +3,7 @@
 import json
 
 
-class Message:
+class Message(object):
     def __init__(self, source, destination, data):
         self.source = source
         self.destination = destination

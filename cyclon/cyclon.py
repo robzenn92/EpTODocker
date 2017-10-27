@@ -14,7 +14,7 @@ from partialView.partialView import PartialView, PodDescriptor
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
-class Cyclon:
+class Cyclon(object):
 
     def __init__(self):
         self.ip = environ['MY_POD_IP']

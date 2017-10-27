@@ -6,7 +6,7 @@ import random
 from operator import attrgetter
 
 
-class PodDescriptor:
+class PodDescriptor(object):
 
     def __init__(self, ip, age=0):
         self.ip = ip
@@ -24,6 +24,9 @@ class PodDescriptor:
     def __gt__(self, other):
         return self.age > other.age
 
+    def to_json(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
     @classmethod
     def from_dict(cls, a_dict):
         ip = str(a_dict['ip'])
@@ -33,7 +36,7 @@ class PodDescriptor:
     __repr__ = __str__
 
 
-class PartialView:
+class PartialView(object):
 
     def __init__(self, ip, limit=int(os.environ['VIEW_LIMIT']), shuffle_length=int(os.environ['SHUFFLE_LENGTH']), peer_list=None):
 
