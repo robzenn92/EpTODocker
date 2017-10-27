@@ -276,6 +276,18 @@ class TestStringMethods(unittest.TestCase):
         self.assertIn("172.0.1.4", sample)
         self.assertIn("172.0.1.10", sample)
 
+    # Method sample_ips should return a list of 3 ips loadable by epto
+    def test_sample_ips_should_return_a_list_of_ips_loadable_by_epto(self):
+        self.partialView.add_peer(PodDescriptor("172.0.1.5", 2))
+        self.partialView.add_peer(PodDescriptor("172.0.1.4", 3))
+        self.partialView.add_peer(PodDescriptor("172.0.1.10", 8))
+        sample = json.dumps(self.partialView.sample_ips(2))
+        # EpTO's code when EpTO invokes get_k_view()
+        view = [ip.encode('ascii', 'ignore') for ip in json.loads(sample)]
+        for destination in view:
+            self.assertIsInstance(destination, str)
+            self.assertIn(destination, self.partialView.get_peer_ip_list())
+
     # Test the exchange of views.
     # P1 plays the role of P while P2 plays the role of Q described in comments
     def test_exchange_views(self):
