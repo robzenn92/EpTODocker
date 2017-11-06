@@ -2,6 +2,8 @@
 
 A real distributed system managed by Kubernetes and composed of Docker containers which run EpTO developed in Python.
 
+![EpTO Network](https://raw.githubusercontent.com/robzenn92/EpTODocker/master/resources/epto_pod_network/epto_pod_network.jpg)
+
 ## Requirements
 
 Please, make sure your system has the following installed.
