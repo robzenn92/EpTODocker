@@ -35,11 +35,8 @@ class EpTODissemination(object):
 
     def broadcast(self):
         event = Event(self.ip)
-        logger.info('Before nextBall was ' + str(self.next_ball))
-        self.next_ball.add(event)
         logger.info('I am adding ' + str(event) + ' to next_ball')
         self.next_ball.add(event)
-        logger.info('Now nextBall =  ' + str(self.next_ball))
 
     def receive_ball(self, received_ball):
 
@@ -47,10 +44,7 @@ class EpTODissemination(object):
         logger.info('I received =  ' + str(type(received_ball)) + " and ball is =\n" + str(received_ball))
 
         for event in received_ball:
-            logger.info('An event in received_ball is of type ' + str(type(event)) + " and is = " + str(event))
-            e = Event.from_dict(event)
-            ball.append(e)
-            logger.info('After Event.from_dict(event) event is of type ' + str(type(e)) + " and is = " + str(e))
+            ball.append(Event.from_dict(event))
 
         for event in ball:
             if event.ttl < self.ttl:
@@ -75,19 +69,20 @@ class EpTODissemination(object):
     # Task executed every delta time units
     def repeated_task(self):
 
-        logger.info('This repeated_task is started. NextBall is ' + str(self.next_ball))
+        logger.critical('This repeated_task is started. NextBall is ' + str(self.next_ball))
 
         if not self.next_ball.is_empty():
 
             self.next_ball.increase_events_ttl()
-            logger.info('I increased the ttl of events in self.next_ball: ' + str(self.next_ball))
+            logger.info('I increased the ttl of events in self.next_ball.')
             self.view = self.get_k_view(self.fanout)
             logger.info('I got a k-view from cyclon: ' + str(self.view))
             for destination in self.view:
-                logger.info(' I send next ball to ' + destination + ' and I got ' + str(self.send_next_ball(destination)))
+                logger.info('I send next ball to ' + destination + ' and I got ' + str(self.send_next_ball(destination)))
 
             # self.ordering.order(self.next_ball.copy())
             self.next_ball = Ball()
+            logger.critical("Next ball is empty: " + str(self.next_ball))
 
         else:
 

@@ -13,7 +13,7 @@ class EpTOApplication(object):
     def __init__(self, ip):
         self.ip = ip
         self.dissemination = EpTODissemination(self.ip, 15, 15)
-        self.schedule_probabilistic_broadcast(15, 3)
+        self.schedule_probabilistic_broadcast(15, 10)
 
     def schedule_probabilistic_broadcast(self, initial_delay, interval):
         logger.info('This is schedule_probabilistic_broadcast but I am waiting ' + str(initial_delay) + 's to start.')

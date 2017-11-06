@@ -52,7 +52,7 @@ def get_k_view():
     global cyclon
     k = int(request.args.get('k'))
     list_ips = cyclon.partialView.sample_ips(k)
-    logger.info('I am returning a k-view:\n' + str(cyclon.partialView))
+    logger.info('I am returning a k-view:\n' + str(list_ips))
     return json.dumps(list_ips)
 
 
