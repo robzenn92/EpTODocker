@@ -1,16 +1,12 @@
 #!/usr/bin/env python2
 
 
-class LogicalCLock(object):
+class LogicalClock(object):
 
-    def __init__(self, ip):
+    def __init__(self, ip, ttl, event_id=0):
         self.ip = ip
-        self.event_id = 0
+        self.ttl = ttl
+        self.event_id = event_id
 
-    @staticmethod
-    def getClock():
-        pass
-
-    @staticmethod
-    def updateClock():
-        pass
+    def __gt__(self, other):
+        return self.event_id > other.event_id

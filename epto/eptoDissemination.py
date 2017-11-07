@@ -8,9 +8,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from configuration import logger, format_address
 from ball import Ball
 from event import Event
-# from eptoOrdering import EpTOOrdering
-from logicalClock import LogicalCLock
+from eptoOrdering import EpTOOrdering
 from messages.message import Message
+from stabilityOracle import StabilityOracle
 
 
 class EpTODissemination(object):
@@ -21,28 +21,25 @@ class EpTODissemination(object):
         self.view = []
         self.fanout = int(os.environ['FANOUT'])
         self.ttl = int(os.environ['TTL'])
-        # self.ordering = EpTOOrdering()
-        self.logicalClock = LogicalCLock(self.ip)
+        self.stability_oracle = StabilityOracle(self.ttl)
+        self.ordering = EpTOOrdering(self.stability_oracle)
         self.schedule_repeated_task(initial_delay, interval)
 
     def schedule_repeated_task(self, initial_delay, interval):
-
-        logger.info('This is schedule_repeated_task but I am waiting ' + str(initial_delay) + 's to start.')
+        logger.info('This is a repeated task but I am waiting ' + str(initial_delay) + 's to start.')
         time.sleep(initial_delay)
         scheduler = BackgroundScheduler(logger=logger)
         scheduler.add_job(self.repeated_task, 'interval', seconds=interval, max_instances=1)
         scheduler.start()
 
     def broadcast(self):
-        event = Event(self.ip)
+        event = Event(self.ip, ts=self.stability_oracle.get_clock())
         logger.info('I am adding ' + str(event) + ' to next_ball')
         self.next_ball.add(event)
 
     def receive_ball(self, received_ball):
-
-        ball = []
         logger.info('I received =  ' + str(type(received_ball)) + " and ball is =\n" + str(received_ball))
-
+        ball = []
         for event in received_ball:
             ball.append(Event.from_dict(event))
 
@@ -54,6 +51,7 @@ class EpTODissemination(object):
                             e.ttl = event.ttl
                 else:
                     self.next_ball.add(event)
+            self.stability_oracle.update_clock(event.ts)
 
     @staticmethod
     def get_k_view(k):
@@ -69,7 +67,7 @@ class EpTODissemination(object):
     # Task executed every delta time units
     def repeated_task(self):
 
-        logger.critical('This repeated_task is started. NextBall is ' + str(self.next_ball))
+        logger.info('This repeated_task is started. NextBall is ' + str(self.next_ball))
 
         if not self.next_ball.is_empty():
 
@@ -78,11 +76,12 @@ class EpTODissemination(object):
             self.view = self.get_k_view(self.fanout)
             logger.info('I got a k-view from cyclon: ' + str(self.view))
             for destination in self.view:
-                logger.info('I send next ball to ' + destination + ' and I got ' + str(self.send_next_ball(destination)))
+                response = self.send_next_ball(destination)
+                logger.info('I sent next ball to ' + destination + ' and I got ' + str(response))
 
-            # self.ordering.order(self.next_ball.copy())
+            self.ordering.order(self.next_ball.copy())
             self.next_ball = Ball()
-            logger.critical("Next ball is empty: " + str(self.next_ball))
+            logger.info("Next ball is empty: " + str(self.next_ball))
 
         else:
 

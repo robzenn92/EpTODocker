@@ -50,7 +50,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(self.event.ts, initial_ts)
 
     def test_new_event_to_string(self):
-        self.assertEqual(str(self.event), "(" + str(self.event.event_id) + "," + self.event.source_id + ",0,0)")
+        self.assertEqual(str(self.event), "(" + self.event.source_id + ",0,0)")
 
     def test_new_event_increment_ttl(self):
         initial_ttl = random.randint(0, 10)
@@ -70,6 +70,21 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(self.event.event_id, initial_uuid)
         self.assertEqual(self.event.ts, initial_ts)
         self.assertEqual(self.event.ttl, initial_ttl + 1)
+
+    def test_events_comparision_with_different_ts(self):
+        e1 = Helpers.generate_empty_event()
+        e2 = Helpers.generate_empty_event()
+        e1.ts = 3
+        e2.ts = 4
+        self.assertTrue(e1 < e2)
+        e1.ts = 5
+        e2.ts = 4
+        self.assertTrue(e1 > e2)
+
+    def test_events_comparision_with_same_ts_but_different_source_id(self):
+        e1 = Event("172.0.0.1")
+        e2 = Event("172.0.0.12")
+        self.assertTrue(e1 < e2)
 
 
 if __name__ == '__main__':
