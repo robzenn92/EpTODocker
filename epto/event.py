@@ -45,6 +45,7 @@ class Event(object):
         return cls(source_id, event_id, ttl, ts)
 
     def __str__(self):
-        return '(' + str(self.source_id) + ',' + str(self.ts) + ',' + str(self.ttl) + ')'
+        letters = [chr(letter).upper() for letter in range(ord('a'), ord('z')+1)]
+        return str(letters[map(int, self.source_id.split('.'))[-1] % len(letters)]) + str(self.ts) + ' (' + str(self.source_id) + ', ts=' + str(self.ts) + ', ttl=' + str(self.ttl) + ')'
 
     __repr__ = __str__

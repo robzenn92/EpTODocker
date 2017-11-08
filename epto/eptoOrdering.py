@@ -6,8 +6,8 @@ from configuration import logger
 class EpTOOrdering(object):
 
     def __init__(self, stability_oracle):
-        self.received = set()  # received map of (id, event) pairs with all known but not yet delivered events
-        self.delivered = set() # delivered set with all the events already delivered to the application
+        self.received = set()   # received map of (id, event) pairs with all known but not yet delivered events
+        self.delivered = []     # list of all the events already delivered to the application
         self.stability_oracle = stability_oracle
         self.last_delivered_ts = 0
 
@@ -39,7 +39,7 @@ class EpTOOrdering(object):
         # smaller than any non deliverable event in the received set.
         # Deliverable events are collected in the deliverable_events set and the minimum timestamp of all the events
         # that cannot yet be delivered is calculated.
-        min_queued_ts = list(self.received)[0].ts
+        min_queued_ts = float('inf')
         deliverable_events = set()
         for event in self.received:
             if self.stability_oracle.is_deliverable(event):
@@ -50,21 +50,21 @@ class EpTOOrdering(object):
         # All the events whose timestamp is greater than min_queued_ts are removed from the deliverable_events set,
         # as they cannot yet be delivered without violating total order.
         # The remaining events are ready to be delivered and thus are removed from the received set.
-        # TODO: Find an elegant way to avoid "RuntimeError: Set changed size during iteration"
-        deliverable_events_copy = deliverable_events.copy()
-        for event in deliverable_events_copy:
-            if event.ts > min_queued_ts:
-                deliverable_events.remove(event)
+        events_to_remove = set()
+        for event in deliverable_events:
+            if event.ts >= min_queued_ts:
+                events_to_remove.add(event)
             else:
                 self.received.remove(event)
+        for event in events_to_remove:
+            deliverable_events.remove(event)
 
         # Finally, the events in deliverableEvents are delivered to the application in timestamp order.
         sorted_deliverable_events = sorted(deliverable_events)
-        logger.critical("I am delivering " + str(sorted_deliverable_events))
         for event in sorted_deliverable_events:
             self.deliver(event)
 
     def deliver(self, event):
-        self.delivered.add(event)
+        self.delivered.append(event)
         self.last_delivered_ts = event.ts
-        logger.info("I Delivered " + str(event))
+        logger.critical("I Delivered " + str(event))
