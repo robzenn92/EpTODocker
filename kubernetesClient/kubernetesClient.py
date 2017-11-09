@@ -7,6 +7,8 @@ import yaml
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
+DEPLOYMENT_NAME = "epto-deployment"
+
 
 class KubernetesClient(object):
 
@@ -27,7 +29,18 @@ class KubernetesClient(object):
 
         # Clients
         self.ClientV1 = client.CoreV1Api()
-        self.ClientV1Beta1Api = client.ExtensionsV1beta1Api()
+        self.ExtensionsV1beta1Api = client.ExtensionsV1beta1Api()
+
+    # -------------------
+
+    def create_deployment_object(self):
+        return self.ExtensionsV1beta1Api.read_namespaced_deployment(name=DEPLOYMENT_NAME, namespace='default')
+
+    def update_deployment_replicas(self, deployment, replicas):
+        # Update pod replicas
+        deployment.spec.replicas = replicas
+        # Update the deployment
+        self.ExtensionsV1beta1Api.patch_namespaced_deployment(name=DEPLOYMENT_NAME, namespace="default", body=deployment)
 
     # -------------------
 
@@ -80,11 +93,21 @@ class KubernetesClient(object):
             return ips
         except ApiException as e:
             sys.stderr.write("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
-            sys.stdout.write("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
 
     def deploy_deployment(self, deployment_file, replicas):
-        with open(deployment_file) as f:
-            dep = yaml.load(f)
-            dep['spec']['replicas'] = replicas
-            resp = self.ClientV1Beta1Api.create_namespaced_deployment(body=dep, namespace="default")
-            print("Deployment created. status='%s'" % str(resp.status))
+
+        try:
+
+            with open(deployment_file) as f:
+
+                dep = yaml.load(f)
+                dep['spec']['replicas'] = replicas
+                try:
+                    self.ExtensionsV1beta1Api.replace_namespaced_deployment_scale("epto-deployment", 'default', { "replicas": 2})
+                    # resp = self.ExtensionsV1beta1Api.create_namespaced_deployment(body=dep, namespace="default")
+                except ApiException as e:
+                    sys.stderr.write("Exception when calling ExtensionsV1beta1Api.create_namespaced_deployment: %s\n" % e)
+
+        except Exception as error:
+            sys.stderr.write("Exception when trying to open: " + deployment_file + ": " + str(error))
+

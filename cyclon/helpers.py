@@ -2,7 +2,7 @@
 
 import os
 import re
-from kubernetesClient import KubernetesClient
+from kubernetesClient.kubernetesClient import KubernetesClient
 
 
 def who_am_i():
