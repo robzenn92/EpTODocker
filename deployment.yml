@@ -50,7 +50,9 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         - name: MY_POD_UID
-          value: 'lollol'
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

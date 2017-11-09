@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-
+import os
 import simplejson as json
 from configuration import logger
 from flask import Flask, request
@@ -13,6 +13,24 @@ from eptoApplication import EpTOApplication
 app = Flask(__name__)
 epto = EpTOApplication(my_ip())
 
+
+# ---------------------
+# Debug routes
+# The below routes are for debug use only.
+
+
+@app.route('/hello')
+def hello_world():
+    return "Hello World. This is an EpTO protocol running on " + my_ip()
+
+
+@app.route('/env')
+def get_env():
+    return str(os.environ)
+
+
+# ---------------------
+# Production routes
 
 @app.route('/receive-ball', methods=['POST'])
 def receive_ball():
