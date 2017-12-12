@@ -33,8 +33,11 @@ class KubernetesClient(object):
 
     # -------------------
 
-    def create_deployment_object(self):
-        return self.ExtensionsV1beta1Api.read_namespaced_deployment(name=DEPLOYMENT_NAME, namespace='default')
+    def get_deployment_object(self):
+        try:
+            return self.ExtensionsV1beta1Api.read_namespaced_deployment(name=DEPLOYMENT_NAME, namespace='default')
+        except ApiException:
+            return None
 
     def update_deployment_replicas(self, deployment, replicas):
         # Update pod replicas
@@ -94,17 +97,14 @@ class KubernetesClient(object):
         except ApiException as e:
             sys.stderr.write("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
 
-    def deploy_deployment(self, deployment_file, replicas):
+    def deploy_deployment(self, deployment_file):
 
         try:
 
             with open(deployment_file) as f:
-
                 dep = yaml.load(f)
-                dep['spec']['replicas'] = replicas
                 try:
-                    self.ExtensionsV1beta1Api.replace_namespaced_deployment_scale("epto-deployment", 'default', { "replicas": 2})
-                    # resp = self.ExtensionsV1beta1Api.create_namespaced_deployment(body=dep, namespace="default")
+                    self.ExtensionsV1beta1Api.create_namespaced_deployment(body=dep, namespace="default")
                 except ApiException as e:
                     sys.stderr.write("Exception when calling ExtensionsV1beta1Api.create_namespaced_deployment: %s\n" % e)
 

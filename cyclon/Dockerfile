@@ -1,6 +1,6 @@
 FROM python:2.7.14-alpine3.6
 
-# Define timezone
+# Set correct timezone for logging
 RUN apk add --update tzdata
 ENV TZ=Europe/Rome
 
