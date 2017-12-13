@@ -7,10 +7,20 @@ A real distributed system managed by Kubernetes and composed of Docker container
 ## Requirements
 
 Please, make sure your system has the following installed.
-- [Python](https://www.python.org) (2.7)
+- [Python](https://www.python.org) (3.6)
 - [Docker](https://www.docker.com)
-- [Kubernetes](https://kubernetes.io) (for local setup download minikube [v0.23.0](https://github.com/kubernetes/minikube/blob/v0.23.0/CHANGELOG.md))
+- [Kubernetes](https://kubernetes.io) (for local setup download Minikube [v0.24.1](https://github.com/kubernetes/minikube/blob/v0.24.1/CHANGELOG.md))
 
+
+## Setting up a Python development environment
+
+One common problem with installing packages directly to your current site-packages area is that, if you have more than one project or use Python on your machine for things other than Django, you may run into dependency issues between your applications and the installed packages. For this reason, we'll be using virtualenv to manage our Django installation. This is common, and recommended, practice among Python and Django users. Please continue reading [here](https://jeffknupp.com/blog/2012/02/09/starting-a-django-project-the-right-way/).
+
+Once you have created a new virtual environment, you need to activate it running something like:
+
+```
+source ~/.virtualenvs/myenv3/bin/activate
+```
 
 Once you have done, you need to install all the packages listed in `requirements.txt`. To do so, you simply need to run the following commands.
 
@@ -71,10 +81,13 @@ $ minikube stop
 Minikube's configurations are stored in `~/.kube/config`. These will be used by the Kubernetes's client in order to deploy Docker containers and run the experiments.
 
 The address and port of the Kubernetes master can be found as follows.
+
 ```
 $ kubectl cluster-info | grep 'Kubernetes master'
 ```
+
 However, if you want to access it via REST Api you can start a [proxy](https://kubernetes.io/docs/tasks/access-kubernetes-api/http-proxy-access-api/) to the Kubernetes API server as follows.
+
 ```
 $ kubectl proxy --port=8080
 Starting to serve on 127.0.0.1:8080
@@ -141,4 +154,14 @@ Now you can reach a random peer's welcome page available on:
 
 ```
 $ curl 192.168.99.100:<nodePort>/hello
+```
+
+The response should look like the following:
+
+```json
+{
+    "success": {
+        "message": "Hello, world! This is a peer."
+    }
+}
 ```
