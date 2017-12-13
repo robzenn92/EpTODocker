@@ -19,7 +19,7 @@ One common problem with installing packages directly to your current site-packag
 Once you have created a new virtual environment, you need to activate it running something like:
 
 ```
-source ~/.virtualenvs/myenv3/bin/activate
+$ source ~/.virtualenvs/myenv3/bin/activate
 ```
 
 Once you have done, you need to install all the packages listed in `requirements.txt`. To do so, you simply need to run the following commands.
@@ -148,12 +148,27 @@ In order to make the replica set accessible from the outside world, you need to 
 
 ```
 $ kubectl expose deployment epto-deployment --type=NodePort
+service "epto-deployment" exposed
+```
+
+At this point, you can get the services with the following command:
+
+```
+$ kubectl get svc
+```
+
+This will print you the services table, similar to the following one:
+
+```
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                         AGE
+epto-deployment   NodePort    10.106.205.106   <none>        5000:30292/TCP,5001:30141/TCP   4s
+kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP                         2d
 ```
 
 Now you can reach a random peer's welcome page available on:
 
 ```
-$ curl 192.168.99.100:<nodePort>/hello
+$ curl 192.168.99.100:30292/hello
 ```
 
 The response should look like the following:
