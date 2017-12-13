@@ -9,8 +9,13 @@ class Message(object):
         self.data = data
 
     def to_json(self):
+        try:
+            to_json = self.data.to_json()
+        except Exception:
+            to_json = self.data
+
         return {
             "source": self.source,
             "destination": self.destination,
-            "data": self.data.to_json()
+            "data": to_json
         }

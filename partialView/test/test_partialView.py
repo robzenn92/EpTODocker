@@ -480,14 +480,14 @@ class TestPartialView(unittest.TestCase):
 
     def test_empty_partial_view_to_json(self):
         jsonized = self.partialView.to_json()
-        self.assertEqual(jsonized, json.dumps({"ip": "172.0.1.0", "limit": 3, "shuffle_length": 2, "peer_list": [], "size": 0}, sort_keys=True, indent=4))
+        self.assertEqual(jsonized, {"ip": "172.0.1.0", "limit": 3, "shuffle_length": 2, "peer_list": [], "size": 0})
 
     def test_unmarshal_partial_view(self):
         for ip in self.ips:
             self.partialView.add_peer_ip(ip)
-        jsonized = json.loads(self.partialView.to_json())
+        jsonized = self.partialView.to_json()
         partial_view = PartialView.from_dict(jsonized)
-        self.assertIsInstance(partial_view,PartialView)
+        self.assertIsInstance(partial_view, PartialView)
         for peer in partial_view.peer_list:
             self.assertIsInstance(peer, PodDescriptor)
         self.assertEqual(partial_view.ip, self.partialView.ip)

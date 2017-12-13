@@ -6,11 +6,11 @@ if [ $? -eq 1 ]; then
     echo "Minikube status was Stopped. It' will start in a while."
     minikube start
 fi
-#echo "Running tests."
+echo "Running tests."
 #sh run_tests.sh
-#if [ $? -eq 0 ]; then
+if [ $? -eq 0 ]; then
     echo "Building Cyclon.."
     sh cyclon_project/build.sh
-#    echo "Building EpTO.."
-#    sh epto/build.sh
-#fi
+    echo "Building EpTO.."
+    sh epto_project/build.sh
+fi
