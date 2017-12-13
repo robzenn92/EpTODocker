@@ -1,13 +1,16 @@
-#!/usr/bin/env python2
-
-import json
+#!/usr/bin/env python3
 
 
 class Message(object):
+
     def __init__(self, source, destination, data):
         self.source = source
         self.destination = destination
         self.data = data
 
     def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return {
+            "source": self.source,
+            "destination": self.destination,
+            "data": self.data.to_json()
+        }

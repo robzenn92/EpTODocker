@@ -1,0 +1,19 @@
+{
+  "source": "source_ip",
+  "destination": "destination_ip",
+  "data": {
+    "ip": "172.0.1.0",
+    "limit": 3,
+    "peer_list": [
+      {
+        "age": 0,
+        "ip": "172.0.1.1"
+      }, {
+        "age": 0,
+        "ip": "172.0.1.2"
+      }
+    ],
+    "shuffle_length": 2,
+    "size": 2
+  }
+}

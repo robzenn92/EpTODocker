@@ -2,7 +2,6 @@ APScheduler==3.4.0
 cachetools==2.0.1
 certifi==2017.11.5
 chardet==3.0.4
-coverage==4.4.2
 Django==2.0
 get==0.0.21
 google-auth==1.2.1
@@ -10,7 +9,6 @@ gunicorn==19.7.1
 idna==2.6
 ipaddress==1.0.18
 kubernetes==4.0.0
-nose2==0.7.2
 oauthlib==2.0.6
 post==0.0.13
 public==0.0.46

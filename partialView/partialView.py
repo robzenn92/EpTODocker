@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import os
 import json
@@ -16,7 +16,7 @@ class PodDescriptor(object):
         return str(self.ip)
 
     def __eq__(self, other):
-        return self.ip == other.ip
+        return self.ip == other.ip if other is not None else False
 
     def __lt__(self, other):
         return self.age < other.age
@@ -25,7 +25,7 @@ class PodDescriptor(object):
         return self.age > other.age
 
     def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
 
     @classmethod
     def from_dict(cls, a_dict):
@@ -58,7 +58,7 @@ class PartialView(object):
         return str(self.to_json())
 
     def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return json.loads(json.dumps(self, default=lambda o: o.__dict__, sort_keys=True))
 
     def add_peer(self, peer, allow_self=False):
         if isinstance(peer, PodDescriptor):
