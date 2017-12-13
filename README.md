@@ -32,7 +32,7 @@ $ sh setup.sh
 
 ## Quick start with minikube
 
-[Minikube](https://github.com/kubernetes/minikube) is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a VM on your laptop for users looking to try out Kubernetes or develop with it day-to-day. The latest released version of minikube is [v0.23.0](https://github.com/kubernetes/minikube/blob/v0.23.0/CHANGELOG.md).
+[Minikube](https://github.com/kubernetes/minikube) is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a VM on your laptop for users looking to try out Kubernetes or develop with it day-to-day. The latest released version of minikube is [v0.24.1](https://github.com/kubernetes/minikube/blob/v0.24.1/CHANGELOG.md).
 
 Please, be sure that docker is running. In order to start up a single-node cluster run:
 
