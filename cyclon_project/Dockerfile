@@ -16,7 +16,7 @@ ADD $FOLDER/manage.py $DESTINATION_FOLDER/$FOLDER/manage.py
 ADD $FOLDER/requirements.txt $DESTINATION_FOLDER/$FOLDER/requirements.txt
 ADD $FOLDER/start_prod.sh $DESTINATION_FOLDER/$FOLDER/start_dev.sh
 
-ADD messages $DESTINATION_FOLDER/messages
+ADD message $DESTINATION_FOLDER/message
 ADD partialView $DESTINATION_FOLDER/partialView
 ADD kubernetesClient $DESTINATION_FOLDER/kubernetesClient
 
