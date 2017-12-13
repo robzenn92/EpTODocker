@@ -6,7 +6,7 @@ from kubernetes.client import ApiClient
 from .helpers import format_address, my_ip, who_am_i
 from .models import cyclon
 from .configuration import logger
-from messages.message import Message
+from message.message import Message
 from partialView.partialView import PartialView
 
 

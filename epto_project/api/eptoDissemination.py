@@ -6,7 +6,7 @@ import time
 import requests
 from ball.ball import Ball
 from event.event import Event
-from messages.message import Message
+from message.message import Message
 from apscheduler.schedulers.background import BackgroundScheduler
 from .configuration import logger
 from .helpers import my_ip, format_address

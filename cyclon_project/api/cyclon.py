@@ -9,7 +9,7 @@ from requests import Timeout
 from .configuration import logger
 from .helpers import format_address
 from kubernetesClient.kubernetesClient import KubernetesClient
-from messages.message import Message
+from message.message import Message
 from partialView.partialView import PartialView, PodDescriptor
 from apscheduler.schedulers.background import BackgroundScheduler
 

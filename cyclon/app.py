@@ -4,7 +4,7 @@ import os
 import json
 from flask import Flask, request
 from cyclon import Cyclon
-from messages.message import Message
+from message.message import Message
 from partialView.partialView import PartialView
 from configuration import logger
 from helpers import my_ip, format_address, who_am_i

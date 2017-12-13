@@ -9,7 +9,7 @@ from configuration import logger, format_address
 from ball import Ball
 from event import Event
 from eptoOrdering import EpTOOrdering
-from messages.message import Message
+from message.message import Message
 from stabilityOracle import StabilityOracle
 
 

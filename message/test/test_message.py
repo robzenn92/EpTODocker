@@ -5,7 +5,7 @@ import unittest
 
 import os
 
-from messages.message import Message
+from message.message import Message
 from partialView.partialView import PartialView
 
 
