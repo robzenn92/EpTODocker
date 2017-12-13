@@ -144,6 +144,8 @@ To deploy EpTO into minikube, you just need to run a kubectl command specifying 
 $ kubectl create -f deployment.yml
 ```
 
+# Smoke Test
+
 In order to make the replica set accessible from the outside world, you need to create a service which exposes the NodePort of the pods as follows.
 
 ```
@@ -165,7 +167,7 @@ epto-deployment   NodePort    10.106.205.106   <none>        5000:30292/TCP,5001
 kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP                         2d
 ```
 
-Now you can reach a random peer's welcome page available on:
+Now you can reach a random peer's Cyclon welcome page available on:
 
 ```
 $ curl 192.168.99.100:30292/hello
@@ -176,7 +178,24 @@ The response should look like the following:
 ```json
 {
     "success": {
-        "message": "Hello, world! This is a peer."
+        "message": "Hello, world! This is a Cyclon peer running on 172.17.0.2."
+    }
+}
+```
+
+
+Now you can reach a random peer's EpTO welcome page available on:
+
+```
+$ curl 192.168.99.100:30141/hello
+```
+
+The response should look like the following:
+
+```json
+{
+    "success": {
+        "message": "Hello, world! This is an EpTO peer running on 172.17.0.14."
     }
 }
 ```
