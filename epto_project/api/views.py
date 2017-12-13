@@ -2,6 +2,7 @@ import os
 import json
 from .models import epto
 from .configuration import logger
+from .helpers import my_ip
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -15,7 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 def get_hello(request):
     if request.method == 'GET':
         if not request.GET:
-            return JsonResponse({"success": {"message": "Hello, world! This is an EpTO peer."}})
+            return JsonResponse({"success": {"message": "Hello, world! This is an EpTO peer running on " + my_ip() + "."}})
         else:
             return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
     else:

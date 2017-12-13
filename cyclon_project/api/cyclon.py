@@ -24,8 +24,8 @@ class Cyclon(object):
 
     def bootstrap(self):
         self.bootstrap_exponential_backoff(5, 5)
-        self.schedule_change(5,15)
-        # self.schedule_change(15, 15)
+        self.schedule_change(5, 15)
+        self.schedule_change(15, 15)
 
     def bootstrap_exponential_backoff(self, initial_delay, delay):
 

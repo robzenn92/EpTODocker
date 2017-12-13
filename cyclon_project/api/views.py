@@ -19,7 +19,7 @@ from partialView.partialView import PartialView
 def get_hello(request):
     if request.method == 'GET':
         if not request.GET:
-            return JsonResponse({"success": {"message": "Hello, world! This is a peer."}})
+            return JsonResponse({"success": {"message": "Hello, world! This is a Cyclon peer running on " + my_ip() + "."}})
         else:
             return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
     else:
