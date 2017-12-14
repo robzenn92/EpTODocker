@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
-
 class Message(object):
 
-    def __init__(self, source, destination, data):
+    def __init__(self, source: str, destination: str, data: object) -> None:
         self.source = source
         self.destination = destination
         self.data = data
 
     def to_json(self):
+
         try:
             to_json = self.data.to_json()
         except Exception:

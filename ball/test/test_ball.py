@@ -89,6 +89,10 @@ class TestBall(unittest.TestCase):
         self.ball.add(e2)
         self.assertEqual(len(self.ball), 2)
 
+    def test_add_to_ball_should_allow_only_to_add_events(self):
+        with self.assertRaises(TypeError):
+            self.ball.add("event")
+
     # def test_to_json(self):
     #     self.ball = Helpers.generate_non_empty_ball(3)
     #     print(self.ball.to_json())
