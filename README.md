@@ -40,18 +40,23 @@ Please, be sure that docker is running. In order to start up a single-node clust
 $ minikube start
 ```
 
-In case you want to have more memory.
+In case you need more memory (e.g. for some Kubernetes addons) you can specify its value as follows:
+
 ```
 $ minikube start --memory 4096
 ```
 
+Keep in mind that the default value is `2048` and if you already have a Minikube VM running, the memory won't be changed as this is done on creation of the VM. Hence, you need to run `minikube delete` before increasing the memory. 
+
 In case you set up a local [Docker Registry](https://docs.docker.com/registry/), you need to run the following.
+
 ```
 $ minikube start --insecure-registry localhost:5000
 ```
 
 
 The output should look like the following:
+
 ```
 Starting local Kubernetes v1.8.0 cluster...
 Starting VM...
@@ -73,7 +78,8 @@ cluster: Running
 kubectl: Correctly Configured: pointing to minikube-vm at 192.168.99.100
 ```
 
-Once the cluster is running you can interact with it using kubectl commands. In order to stop minikube, just run:
+Once the cluster is running you can interact with it using the Kubernetes's CLI. In order to stop Minikube, just run:
+
 ```
 $ minikube stop
 ```
@@ -97,20 +103,22 @@ Then you can send requests to `http://localhost:8080/api/` as defined in the [AP
 
 ### Kubernetes Addons
 
-Kubernetes comes with a variety of addons. One of them which is really useful in order to supervise the cluster is [Grafana](https://github.com/grafana/kubernetes-app). You can enable Grafana on your cluster following the steps defined here below or on the [Addons's page](https://github.com/kubernetes/minikube/blob/master/docs/addons.md).
+Kubernetes comes with a variety of addons. You can have a clue about the available addons in your cluster running the following:
 
 ```
-$ minikube addons enable heapster
-$ minikube addons open heapster
+$ minikube addons list
 ```
 
-Other addons that will be used are [Elasticsearch](https://www.elastic.co), [Fluentd](https://www.fluentd.org) and [Kibana](https://www.elastic.co/products/kibana). These definition can be found [here (v1.8.0)](https://github.com/kubernetes/kubernetes/tree/v1.8.0/cluster/addons/fluentd-elasticsearch). Elasticsearch is a search engine that is responsible for storing our logs and allowing for them to be queried. Fluentd sends log messages from Kubernetes to Elasticsearch, whereas Kibana is a graphical interface for viewing and querying the logs stored in Elasticsearch. You can enable them by executing:
+A couple of them which are really useful in order to supervise the cluster are [Grafana](https://github.com/grafana/kubernetes-app) and [EFK](https://github.com/kubernetes/kubernetes/tree/v1.8.0/cluster/addons/fluentd-elasticsearch)(a combination of [Elasticsearch](https://www.elastic.co), [Fluentd](https://www.fluentd.org) and [Kibana](https://www.elastic.co/products/kibana)).
+In particular, Elasticsearch is a search engine that is responsible for storing our logs and allowing for them to be queried. Fluentd sends log messages from Kubernetes to Elasticsearch, whereas Kibana is a graphical interface for viewing and querying the logs stored in Elasticsearch.
+You can enable them following the steps defined here below or on the [Addons's page](https://github.com/kubernetes/minikube/blob/master/docs/addons.md).
 
 ```
-$ cd efk
-$ sh deploy.sh
+$ minikube addons enable efk
+$ minikube addons open efk
 ```
 
+Keep into consideration that EFK requires at least 4GB of memory. Hence, you need to use the `--memory 4096` option when starting your Minikube cluster.
 
 # Test
 
