@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 class Message(object):
 
     def __init__(self, source: str, destination: str, data: object) -> None:
