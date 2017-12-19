@@ -101,7 +101,7 @@ Starting to serve on 127.0.0.1:8080
 
 Then you can send requests to `http://localhost:8080/api/` as defined in the [API docs](https://kubernetes.io/docs/api-reference/v1.8/).
 
-### Kubernetes Addons
+### Cluster Add-ons
 
 Kubernetes comes with a variety of addons. You can have a clue about the available addons in your cluster running the following:
 
