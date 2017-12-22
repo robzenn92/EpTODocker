@@ -38,7 +38,7 @@ spec:
         - name: LOG_DATE_FORMAT
           value: '%Y-%m-%d,%H:%M:%S'
         - name: LOG_FORMAT
-          value: '[%(asctime)s.%(msecs)03d - %(levelname)s] %(filename)s:%(lineno)d | %(funcName)s - %(message)s'
+          value: '[%(asctime)s.%(msecs)03d] %(message)s'
       - name: epto
         image: epto:latest
         imagePullPolicy: Never

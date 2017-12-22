@@ -29,7 +29,8 @@ class Cyclon(object):
 
     def bootstrap_exponential_backoff(self, initial_delay, delay):
 
-        logger.info("Bootstrapping cyclon's view: " + str(self.partialView))
+        logger.info("Bootstrapping", ip=self.ip, partialView=self.partialView)
+        return
         time.sleep(initial_delay)
 
         attempt = 1
