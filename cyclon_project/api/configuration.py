@@ -165,15 +165,15 @@ def get_logging_formatters():
             "datefmt": "%Y-%m-%d %H:%M:%S"
         },
         "standard": {
-            "format": "%(asctime)s - %(levelname)-5s [%(filename)s:%(lineno)s] %(message)s",
+            "format": "[%(levelname)-8s] %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S"
         },
         "verbose": {
-            "format": "%(asctime)s - %(levelname)-5s %(module)s [%(filename)s:%(lineno)s] %(process)d %(thread)d %(message)s",
+            "format": "%(asctime)s - %(name)s - %(levelname)-8s %(module)s [%(filename)s:%(lineno)s] %(process)d %(thread)d %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S"
         },
         "console": {
-            "format": "%(asctime)s - %(levelname)-5s [%(filename)s:%(lineno)s] %(message)s",
+            "format": "%(asctime)s - %(levelname)-8s [%(filename)s:%(lineno)s] %(message)s",
             "datefmt": "%H:%M:%S"
         }
     }
@@ -182,9 +182,9 @@ def get_logging_formatters():
 def get_logging_handlers():
     handlers = {
         "console": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "minimal",
+            "formatter": "verbose",
             "stream": sys.stdout
         },
     }
@@ -196,9 +196,9 @@ def get_loggers():
     return {
         "": {
             "handlers": handlers,
-            "level": "INFO",
+            "level": "DEBUG",
             "propagate": True
-        },
+        }
     }
 
 
@@ -207,8 +207,8 @@ def get_dict_config():
         "version": 1,
         "disable_existing_loggers": False,
         "root": {
-            "level": "INFO",
-            "handlers": [LOGGING_DEFAULT_HANDLER],
+            "level": "DEBUG",
+            "handlers": [LOGGING_DEFAULT_HANDLER]
         },
         "formatters": get_logging_formatters(),
         "handlers": get_logging_handlers(),
@@ -229,7 +229,5 @@ log = logging.getLogger()
 #     cache_logger_on_first_use=True
 # )
 #
-# logger = structlog.wrap_logger(log)
 
 logger = structlog.wrap_logger(log)
-logger.info("LOOOOL")

@@ -44,6 +44,8 @@ In case you need more memory (e.g. for some Kubernetes addons) you can specify i
 
 ```
 $ minikube start --memory 4096
+$ minikube start --memory 6146
+$ minikube start --memory 8192
 ```
 
 Keep in mind that the default value is `2048` and if you already have a Minikube VM running, the memory won't be changed as this is done on creation of the VM. Hence, you need to run `minikube delete` before increasing the memory. 

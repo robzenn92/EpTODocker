@@ -72,10 +72,9 @@ def get_k_view(request):
     if request.method == 'GET':
         k = int(request.GET.get('k'))
         if k:
-            logger.info(str(cyclon.partialView))
-            cyclon.partialView = cyclon.partialView.select_neighbors_for_request()
+            logger.debug("GetKView", request=request, partialView=cyclon.partialView)
             list_ips = cyclon.partialView.sample_ips(k)
-            logger.debug('I am returning a k-view:\n' + str(list_ips))
+            logger.debug("GetKView", list_ips=list_ips)
             return JsonResponse(list_ips, safe=False)
         else:
             return JsonResponse({"error": {"message": "You must specify the parameter k."}}, status=500)
@@ -87,23 +86,24 @@ def get_k_view(request):
 def exchange_view(request):
     if request.method == 'POST':
 
-        logger.info("My view before the exchange is:\n" + str(cyclon.partialView))
+        logger.debug("ExchangeView", request=request, partialView=cyclon.partialView)
 
-        # 1) I cast the received json into a PartialView
+        # 1) I cast the received json into a PartialView.
+        logger.debug("ExchangeView: I cast the received json into a PartialView.")
         message = json.loads(request.body)
         received_partial_view = PartialView.from_dict(message.get('data'))
-        logger.info('I got (from ' + message.get('source') + ') the following:\n' + str(received_partial_view))
 
-        # 2) I send a subset of my partial view no matter if the source ip is contained in it
+        # 2) I send a subset of my partial view no matter if the source ip is contained in it.
+        logger.debug("ExchangeView: I send a subset of my partial view no matter if the source ip is contained in it.")
         to_send = cyclon.partialView.select_neighbors_for_reply()
-        logger.info('I will send (to ' + message.get('source') + ') the following:\n' + str(to_send) + ".")
 
-        # 3) I merge current partial view with the one just received
+        # 3) I merge current partial view with the one just received.
+        logger.debug("ExchangeView: I merge current partial view with the one just received.")
         cyclon.partialView.merge(to_send, received_partial_view)
-        logger.info('After merged:\n' + str(cyclon.partialView))
+        logger.debug("ExchangeView", partialView=cyclon.partialView)
 
         m = Message(format_address(my_ip(), 5000), message.get('source'), to_send)
-        logger.info('Returning this:\n' + str(m.to_json()))
+        logger.debug("ExchangeView", response=m.to_json(), to=message.get('source'))
         return JsonResponse(m.to_json())
 
     else:
