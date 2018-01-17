@@ -42,6 +42,36 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(self.event.ttl, 0)
         self.assertEqual(self.event.ts, 0)
 
+    def test_event_from_dict(self):
+
+        a_dict = {
+            'event_id': self.event.event_id,
+            'source_id': self.event.source_id,
+            'ttl': self.event.ttl,
+            'ts': self.event.ts
+        }
+        event = Event.from_dict(a_dict)
+        self.assertEqual(event.event_id, self.event.event_id)
+        self.assertEqual(event.source_id, self.event.source_id)
+        self.assertEqual(event.ttl, self.event.ttl)
+        self.assertEqual(event.ts, self.event.ts)
+
+    def test_equal_events_with_same_id(self):
+        e1 = Helpers.generate_non_empty_event()
+        e2 = Helpers.generate_non_empty_event()
+        e2.event_id = e1.event_id
+        self.assertEqual(e1, e2)
+
+    def test_comparison_operators_should_compare_only_events(self):
+        with self.assertRaises(TypeError):
+            self.event.__eq__("a string")
+        with self.assertRaises(TypeError):
+            self.event.__ne__("a string")
+        with self.assertRaises(TypeError):
+            self.event.__lt__("a string")
+        with self.assertRaises(TypeError):
+            self.event.__gt__("a string")
+
     def test_different_events_should_not_be_equal(self):
         e1 = Event("source")
         e2 = Event("source")
@@ -93,14 +123,21 @@ class TestEvent(unittest.TestCase):
         e1.ts = 3
         e2.ts = 4
         self.assertTrue(e1 < e2)
+        self.assertTrue(e2 > e1)
+        self.assertFalse(e1 > e2)
+        self.assertFalse(e2 < e1)
         e1.ts = 5
         e2.ts = 4
         self.assertTrue(e1 > e2)
+        self.assertTrue(e2 < e1)
+        self.assertFalse(e1 < e2)
+        self.assertFalse(e2 > e1)
 
     def test_events_comparision_with_same_ts_but_different_source_id(self):
         e1 = Event("172.0.0.9")
         e2 = Event("172.0.0.10")
         self.assertTrue(e1 < e2)
+        self.assertTrue(e2 > e1)
 
 
 if __name__ == '__main__':

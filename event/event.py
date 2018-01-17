@@ -32,10 +32,7 @@ class Event(object):
     # Events are not equal if they do not have the same event_id. It does not matter other attributes
     # This is used to check (e1 != e2)
     def __ne__(self, other: object) -> bool:
-        if isinstance(other, Event):
-            return self.event_id != other.event_id
-        else:
-            raise TypeError
+        return not self.__eq__(other)
 
     # Allows to sort events by (ts, srcId)
     # This is used only for sorting purposes to check lt (e.g. e1 < e2).
