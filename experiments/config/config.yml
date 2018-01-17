@@ -1,0 +1,18 @@
+experiment:
+  name: "experiment 1"
+  description: "A brief description"
+  replicas: 10
+  spec:
+    containers:
+    - name: cyclon
+      env:
+      - name: VIEW_LIMIT
+        value: '4'
+      - name: SHUFFLE_LENGTH
+        value: '3'
+      - name: LOG_LEVEL
+        value: INFO
+      - name: LOG_DATE_FORMAT
+        value: '%Y-%m-%d,%H:%M:%S'
+      - name: LOG_FORMAT
+        value: '[%(asctime)s.%(msecs)03d - %(levelname)s] %(filename)s:%(lineno)d | %(funcName)s - %(message)s'
