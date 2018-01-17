@@ -102,3 +102,8 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# my files
+RESOURCES.md
+deployment_aws.yml
+resources/
