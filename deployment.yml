@@ -1,9 +1,9 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: epto-deployment
+  name: cyclon-deployment
 spec:
-  replicas: 6
+  replicas: 20
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app: epto
+        app: cyclon
     spec:
       containers:
       - name: cyclon
@@ -29,45 +29,56 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+        - name: APP
+          value: 'cyclon'
+        - name: DEPLOYMENT_NAME
+          value: 'cyclon-deployment'
         - name: VIEW_LIMIT
-          value: '4'
+          value: '10'
         - name: SHUFFLE_LENGTH
-          value: '3'
+          value: '8'
         - name: LOG_LEVEL
           value: 'INFO'
         - name: LOG_DATE_FORMAT
           value: '%Y-%m-%d,%H:%M:%S'
         - name: LOG_FORMAT
           value: '[%(asctime)s.%(msecs)03d - %(levelname)s] %(filename)s:%(lineno)d | %(funcName)s - %(message)s'
-      - name: epto
-        image: epto:latest
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 5001
-        env:
-        - name: MY_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: MY_POD_UID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.uid
-        - name: MY_POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        - name: VIEW_LIMIT
-          value: '2'
-        - name: BROADCAST_PROB
-          value: '0.5'
-        - name: FANOUT
-          value: '2'
-        - name: TTL
-          value: '3'
-        - name: LOG_LEVEL
-          value: 'INFO'
-        - name: LOG_DATE_FORMAT
-          value: '%Y-%m-%d,%H:%M:%S'
-        - name: LOG_FORMAT
-          value: '[%(asctime)s.%(msecs)03d - %(levelname)s] %(filename)s:%(lineno)d | %(funcName)s - %(message)s'
+        resources:
+          limits:
+            memory: 90Mi
+            cpu: 2m
+          requests:
+            memory: 75Mi
+            cpu: 1m
+#      - name: epto
+#        image: epto:latest
+#        imagePullPolicy: Never
+#        ports:
+#        - containerPort: 5001
+#        env:
+#        - name: MY_POD_NAME
+#          valueFrom:
+#            fieldRef:
+#              fieldPath: metadata.name
+#        - name: MY_POD_UID
+#          valueFrom:
+#            fieldRef:
+#              fieldPath: metadata.uid
+#        - name: MY_POD_IP
+#          valueFrom:
+#            fieldRef:
+#              fieldPath: status.podIP
+#        - name: VIEW_LIMIT
+#          value: '2'
+#        - name: BROADCAST_PROB
+#          value: '0.5'
+#        - name: FANOUT
+#          value: '2'
+#        - name: TTL
+#          value: '3'
+#        - name: LOG_LEVEL
+#          value: 'INFO'
+#        - name: LOG_DATE_FORMAT
+#          value: '%Y-%m-%d,%H:%M:%S'
+#        - name: LOG_FORMAT
+#          value: '[%(asctime)s.%(msecs)03d - %(levelname)s] %(filename)s:%(lineno)d | %(funcName)s - %(message)s'

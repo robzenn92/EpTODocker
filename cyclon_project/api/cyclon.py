@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
+import os
 import random
 import time
 import json
 import requests
-from os import environ
 from requests import Timeout
 from .configuration import logger
 from .helpers import format_address
@@ -17,14 +17,13 @@ from apscheduler.schedulers.background import BackgroundScheduler
 class Cyclon(object):
 
     def __init__(self):
-        self.ip = environ['MY_POD_IP']
+        self.ip = os.environ['MY_POD_IP']
         self.k8s = KubernetesClient()
         self.partialView = PartialView(self.ip)
         self.bootstrap()
 
     def bootstrap(self):
         self.bootstrap_exponential_backoff(5, 5)
-        self.schedule_change(5, 15)
         self.schedule_change(15, 15)
 
     def bootstrap_exponential_backoff(self, initial_delay, delay):
@@ -32,8 +31,10 @@ class Cyclon(object):
         logger.info("Bootstrapping cyclon's view: " + str(self.partialView))
         time.sleep(initial_delay)
 
+        app_name = os.environ['APP']
+
         attempt = 1
-        ips = self.k8s.list_pods_ips_by_field_selector(label_selector="app=epto", field_selector="status.phase=Running")
+        ips = self.k8s.list_pods_ips_by_field_selector(label_selector="app="+app_name, field_selector="status.phase=Running")
         logger.info('There are ' + str(len(ips)) + " Pods running. This is attempt #" + str(attempt))
 
         # Exponential backoff starts in case the number of running pods is lower than the partialView's limit.

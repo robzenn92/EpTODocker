@@ -7,7 +7,9 @@ import yaml
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
-DEPLOYMENT_NAME = "epto-deployment"
+# Getting environment variables from Deployment
+APP = os.environ['APP']
+DEPLOYMENT_NAME = os.environ['DEPLOYMENT_NAME']
 
 
 class KubernetesClient(object):
@@ -19,12 +21,19 @@ class KubernetesClient(object):
         # Configs can be set in Configuration class directly or using helper
         # utility. If no argument provided, the config will be loaded from
         # default location.
+
+        # try:
+        #     if os.path.exists(os.path.expanduser(config.kube_config.KUBE_CONFIG_DEFAULT_LOCATION)):
+        #         config.load_kube_config()
+        #     else:
+        #         config.load_incluster_config()
+        # except Exception as e:
+        #     sys.stderr.write("Exception when loading configuration: %s\n" % e)
+
         try:
-            if os.path.exists(os.path.expanduser(config.kube_config.KUBE_CONFIG_DEFAULT_LOCATION)):
-                config.load_kube_config()
-            else:
-                config.load_incluster_config()
+            config.load_incluster_config()
         except Exception as e:
+            config.load_kube_config()
             sys.stderr.write("Exception when loading configuration: %s\n" % e)
 
         # Clients
@@ -111,3 +120,9 @@ class KubernetesClient(object):
         except Exception as error:
             sys.stderr.write("Exception when trying to open: " + deployment_file + ": " + str(error))
 
+
+if __name__ == '__main__':
+
+    k8s = KubernetesClient()
+    ips = k8s.list_pods_ips_by_field_selector(label_selector="app="+APP, field_selector="status.phase=Running")
+    print(ips)
