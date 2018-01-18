@@ -58,6 +58,7 @@ function check_minikube {
 
 CYCLON_PATH=cyclon_project
 EPTO_PATH=epto_project
+KUBERNETES_CLIENT_PATH=kubernetesClient
 VERSION=latest
 
 function set_docker_context {
@@ -97,8 +98,12 @@ function build {
         elif [ "$1" = "epto" ]; then
             docker build -f ${EPTO_PATH}/Dockerfile -t $1:${VERSION} .
             tag_image $1
+        elif [ "$1" = "kubeclient" ]; then
+            docker build -f ${KUBERNETES_CLIENT_PATH}/Dockerfile -f $1:${VERSION} .
+            tag_image $1
         else
             echo "Sorry I don't known any image named $1"
+            echo "You can build [ cyclon, epto, kubeclient, all ]."
             exit 1
         fi
     fi
