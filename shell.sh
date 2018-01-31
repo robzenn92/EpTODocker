@@ -147,6 +147,12 @@ function deploy {
     kubectl get pod -o wide
 }
 
+function deploy_grafana {
+    kubectl create -f https://raw.githubusercontent.com/aws-samples/aws-workshop-for-kubernetes/master/cluster-monitoring/templates/heapster/heapster.yaml
+    kubectl create -f https://raw.githubusercontent.com/aws-samples/aws-workshop-for-kubernetes/master/cluster-monitoring/templates/heapster/heapster-rbac.yaml
+    kubectl create -f https://raw.githubusercontent.com/aws-samples/aws-workshop-for-kubernetes/master/cluster-monitoring/templates/heapster/influxdb.yaml
+    kubectl create -f https://raw.githubusercontent.com/aws-samples/aws-workshop-for-kubernetes/master/cluster-monitoring/templates/heapster/grafana.yaml
+}
 ##########################
 # Kops
 ##########################
@@ -190,7 +196,8 @@ function s3api_check_bucket {
 
 function s3api_create_bucket {
 
-    if [[ "$(s3api_check_bucket)" != "0" ]]; then
+    s3api_check_bucket
+    if [ $? -eq 0 ]; then
         echo "k8s-epto-bucket not found, I am creating a new bucket"
         aws s3api create-bucket --bucket $BUCKET_NAME --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
         echo "I am now enabling the versioning of the bucket"
