@@ -10,10 +10,11 @@ spec:
         app: kube
     spec:
       containers:
-      - name: kube
-        image: 884973541725.dkr.ecr.us-west-2.amazonaws.com/thesis:kubeclient
+      - name: kubeclient
+        image: kubeclient:latest
+        imagePullPolicy: Never
         env:
         - name: APP
-          value: 'cyclon'
+          value: 'epto'
         - name: DEPLOYMENT_NAME
-          value: 'cyclon-deployment'
+          value: 'epto-deployment'

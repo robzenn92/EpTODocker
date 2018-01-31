@@ -7,6 +7,10 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
+# HTTP Status
+# 403 : Forbidden
+# 500 : Internal Server Error
+
 # ---------------------
 # Debug routes
 # The below routes are for debug use only.
@@ -20,7 +24,7 @@ def get_hello(request):
         else:
             return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
     else:
-        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=500)
+        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
 
 @csrf_exempt
@@ -34,7 +38,7 @@ def get_env(request):
         else:
             return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
     else:
-        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=500)
+        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
 
 # ---------------------
@@ -49,4 +53,4 @@ def receive_ball(request):
         epto.dissemination.receive_ball(message.get('data'))
         return JsonResponse({'success': True})
     else:
-        return JsonResponse({"error": {"message": "Only the POST method is allowed."}}, status=500)
+        return JsonResponse({"error": {"message": "Only the POST method is allowed."}}, status=403)

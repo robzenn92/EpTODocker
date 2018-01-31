@@ -19,6 +19,7 @@ class Cyclon(object):
     def __init__(self):
         self.ip = os.environ['MY_POD_IP']
         self.k8s = KubernetesClient()
+        self.api_version = 'v1'
         self.partialView = PartialView(self.ip)
         self.bootstrap()
 
@@ -109,6 +110,6 @@ class Cyclon(object):
     def send_message(self, destination_ip, path, data):
         m = Message(format_address(self.ip, 5000), format_address(destination_ip, 5000), data)
         logger.info('I am sending Message: \n' + str(m.to_json()))
-        ret = requests.post(m.destination + '/' + path, json=m.to_json(), timeout=5)
+        ret = requests.post(m.destination + '/' + self.api_version + '/' + path, json=m.to_json(), timeout=5)
         logger.info('I got the following response:\n' + str(ret))
         return ret.content

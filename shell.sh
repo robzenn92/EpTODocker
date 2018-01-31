@@ -66,12 +66,12 @@ function set_docker_context {
     read -p "Do you want to start working on Minikube context? [y/N] " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        minikube_status > /dev/null
-        if [ $? -eq 0 ]; then
-            echo "Minikube is not running. I will start it for you!"
-            run_minikube
-            eval $(minikube docker-env)
-        fi
+#        minikube_status > /dev/null
+#        if [ $? -eq 0 ]; then
+#            echo "Minikube is not running. I will start it for you!"
+#            run_minikube
+#        fi
+        eval $(minikube docker-env)
     fi
 }
 
@@ -88,18 +88,23 @@ function build {
         set_docker_context
         echo "Building $1"
         if [ "$1" = "all" ]; then
+            echo "docker build -f ${CYCLON_PATH}/Dockerfile -t cyclon:${VERSION} ."
             docker build -f ${CYCLON_PATH}/Dockerfile -t cyclon:${VERSION} .
+            echo "docker build -f ${EPTO_PATH}/Dockerfile -t epto:${VERSION} ."
             docker build -f ${EPTO_PATH}/Dockerfile -t epto:${VERSION} .
             tag_image cyclon
             tag_image epto
         elif [ "$1" = "cyclon" ]; then
+            echo "docker build -f ${CYCLON_PATH}/Dockerfile -t $1:${VERSION} ."
             docker build -f ${CYCLON_PATH}/Dockerfile -t $1:${VERSION} .
             tag_image $1
         elif [ "$1" = "epto" ]; then
+            echo "docker build -f ${EPTO_PATH}/Dockerfile -t $1:${VERSION} ."
             docker build -f ${EPTO_PATH}/Dockerfile -t $1:${VERSION} .
             tag_image $1
         elif [ "$1" = "kubeclient" ]; then
-            docker build -f ${KUBERNETES_CLIENT_PATH}/Dockerfile -f $1:${VERSION} .
+            echo "docker build -f ${KUBERNETES_CLIENT_PATH}/Dockerfile -f $1:${VERSION} ${KUBERNETES_CLIENT_PATH}"
+            docker build -f ${KUBERNETES_CLIENT_PATH}/Dockerfile -t $1:${VERSION} ${KUBERNETES_CLIENT_PATH}
             tag_image $1
         else
             echo "Sorry I don't known any image named $1"

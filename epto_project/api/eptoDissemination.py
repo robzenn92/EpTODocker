@@ -18,6 +18,7 @@ class EpTODissemination(object):
 
     def __init__(self, initial_delay, interval):
         self.ip = my_ip()
+        self.api_version = 'v1'
         self.next_ball = Ball()
         self.view = []
         self.fanout = int(os.environ['FANOUT'])
@@ -55,9 +56,8 @@ class EpTODissemination(object):
                     self.next_ball.add(event)
             self.stability_oracle.update_clock(event.ts)
 
-    @staticmethod
-    def get_k_view(k):
-        ret = requests.get('http://localhost:5000/k-view', params={'k': k}, timeout=5)
+    def get_k_view(self, k):
+        ret = requests.get('http://localhost:5000/' + self.api_version + '/k-view', params={'k': k}, timeout=5)
         logger.info('I got the following response:\n' + str(ret.content))
         return json.loads(ret.content)
         # return [ip.encode('ascii', 'ignore') for ip in json.loads(ret.content)]
@@ -66,7 +66,7 @@ class EpTODissemination(object):
         m = Message(format_address(self.ip, 5001), format_address(destination, 5001), self.next_ball)
         logger.info('I am sending next ball to: ' + str(destination))
         logger.info('I am sending the following: ' + str(m.to_json()))
-        ret = requests.post(m.destination + '/receive-ball', json=m.to_json(), timeout=5)
+        ret = requests.post(m.destination + '/' + self.api_version + '/receive-ball', json=m.to_json(), timeout=5)
         return ret.content
 
     # Task executed every delta time units

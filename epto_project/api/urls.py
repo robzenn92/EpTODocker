@@ -1,18 +1,20 @@
 from . import views
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
 
-    # ---------------------
-    # Debug routes
-    # The below routes are for debug use only.
+    path('v1/', include([
+        # ---------------------
+        # Debug routes
+        # The below routes are for debug use only.
 
-    path('hello', views.get_hello, name='index'),
-    path('env', views.get_env, name='env'),
+        path('hello', views.get_hello, name='index'),
+        path('env', views.get_env, name='env'),
 
-    # ---------------------
-    # Production routes
-    # The below routes are for production use.
+        # ---------------------
+        # Production routes
+        # The below routes are for production use.
 
-    path('receive-ball', views.receive_ball, name='receive-ball')
+        path('receive-ball', views.receive_ball, name='receive-ball')
+    ])),
 ]

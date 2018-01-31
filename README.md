@@ -7,9 +7,9 @@ A real distributed system managed by Kubernetes and composed of Docker container
 ## Requirements
 
 Please, make sure your system has the following installed.
-- [Python](https://www.python.org) (3.6)
+- [Python](https://www.python.org) (v3.6)
 - [Docker](https://www.docker.com)
-- [Kubernetes](https://kubernetes.io) (for local setup download Minikube [v0.24.1](https://github.com/kubernetes/minikube/blob/v0.24.1/CHANGELOG.md))
+- [Kubernetes](https://kubernetes.io) ([v1.9](https://github.com/kubernetes/kubernetes)) (for local setup download Minikube [v0.25.0](https://github.com/kubernetes/minikube/blob/v0.25.0/CHANGELOG.md))
 
 
 ## Setting up a Python development environment
@@ -32,7 +32,7 @@ $ sh setup.sh
 
 ## Quick start with minikube
 
-[Minikube](https://github.com/kubernetes/minikube) is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a VM on your laptop for users looking to try out Kubernetes or develop with it day-to-day. The latest released version of minikube is [v0.24.1](https://github.com/kubernetes/minikube/blob/v0.24.1/CHANGELOG.md).
+[Minikube](https://github.com/kubernetes/minikube) is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a VM on your laptop for users looking to try out Kubernetes or develop with it day-to-day. The latest released version of minikube is [v0.25.0](https://github.com/kubernetes/minikube/blob/v0.25.0/CHANGELOG.md).
 
 Please, be sure that docker is running. In order to start up a single-node cluster run:
 

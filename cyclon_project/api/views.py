@@ -9,11 +9,13 @@ from .configuration import logger
 from message.message import Message
 from partialView.partialView import PartialView
 
+# HTTP Status
+# 403 : Forbidden
+# 500 : Internal Server Error
 
 # ---------------------
 # Debug routes
 # The below routes are for debug use only.
-
 
 @csrf_exempt
 def get_hello(request):
@@ -23,7 +25,7 @@ def get_hello(request):
         else:
             return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
     else:
-        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=500)
+        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
 
 @csrf_exempt
@@ -34,7 +36,7 @@ def get_who_am_i(request):
         else:
             return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
     else:
-        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=500)
+        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
 
 @csrf_exempt
@@ -48,7 +50,7 @@ def get_env(request):
         else:
             return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
     else:
-        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=500)
+        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
 
 @csrf_exempt
@@ -59,7 +61,7 @@ def get_view(request):
         else:
             return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
     else:
-        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=500)
+        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
 
 # ---------------------
@@ -80,7 +82,7 @@ def get_k_view(request):
         else:
             return JsonResponse({"error": {"message": "You must specify the parameter k."}}, status=500)
     else:
-        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=500)
+        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
 
 @csrf_exempt
@@ -107,4 +109,4 @@ def exchange_view(request):
         return JsonResponse(m.to_json())
 
     else:
-        return JsonResponse({"error": {"message": "Only the POST method is allowed."}}, status=500)
+        return JsonResponse({"error": {"message": "Only the POST method is allowed."}}, status=403)
