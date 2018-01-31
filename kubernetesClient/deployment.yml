@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kube
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kube
+    spec:
+      containers:
+      - name: kube
+        image: 884973541725.dkr.ecr.us-west-2.amazonaws.com/thesis:kubeclient
+        env:
+        - name: APP
+          value: 'cyclon'
+        - name: DEPLOYMENT_NAME
+          value: 'cyclon-deployment'

@@ -3,12 +3,7 @@ kind: Deployment
 metadata:
   name: epto-deployment
 spec:
-  replicas: 6
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1%
-      maxSurge: 1%
+  replicas: 20
   template:
     metadata:
       labels:
@@ -17,7 +12,7 @@ spec:
       containers:
       - name: cyclon
         image: cyclon:latest
-        imagePullPolicy: Never
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         env:
@@ -29,19 +24,30 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+        - name: APP
+          value: "epto"
+        - name: DEPLOYMENT_NAME
+          value: "epto-deployment"
         - name: VIEW_LIMIT
-          value: '4'
+          value: "10"
         - name: SHUFFLE_LENGTH
-          value: '3'
+          value: "8"
         - name: LOG_LEVEL
-          value: 'INFO'
+          value: "INFO"
         - name: LOG_DATE_FORMAT
-          value: '%Y-%m-%d,%H:%M:%S'
+          value: "%Y-%m-%d,%H:%M:%S"
         - name: LOG_FORMAT
-          value: '[%(asctime)s.%(msecs)03d - %(levelname)s] %(filename)s:%(lineno)d | %(funcName)s - %(message)s'
+          value: "[%(asctime)s.%(msecs)03d - %(levelname)s] %(filename)s:%(lineno)d | %(funcName)s - %(message)s"
+        resources:
+          limits:
+            memory: 90Mi
+            cpu: 2m
+          requests:
+            memory: 75Mi
+            cpu: 1m
       - name: epto
         image: epto:latest
-        imagePullPolicy: Never
+        imagePullPolicy: Always
         ports:
         - containerPort: 5001
         env:
