@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Minikube checks before executing some bash scripts. [#10](https://github.com/robzenn92/EpTODocker/issues/10)
 - `MY_POD_UID` exposed as EpTO's env variable in `deployment.yml`. [#9](https://github.com/robzenn92/EpTODocker/issues/9)
+- Resources requirements and limits on cyclon container.
+- Kubernetes Operations (kops) to provision a Kubernetes cluster hosted on AWS.
+- KubernetsClient can be built as Docker container and be deployed in a cluster.
 
 ### Changed
 - Cyclon and EpTO have been migrated from Python 2.7 with Flask 0.12 to Python 3.6 with Django 2.0. [#1](https://github.com/robzenn92/EpTODocker/issues/1)
