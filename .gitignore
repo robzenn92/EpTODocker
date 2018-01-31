@@ -107,3 +107,7 @@ ENV/
 RESOURCES.md
 deployment_aws.yml
 resources/
+
+kubernetesClient/*.crt
+kubernetesClient/*.key
+kubernetesClient/*config
