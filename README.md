@@ -27,7 +27,7 @@ Once you have done, you need to install all the packages listed in `requirements
 ```
 $ git clone https://github.com/robzenn92/EpTODocker.git
 $ cd EpTODocker
-$ sh setup.sh
+$ ./shell.sh setup
 ```
 
 ## Quick start with minikube
