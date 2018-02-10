@@ -125,7 +125,7 @@ Keep into consideration that EFK requires at least 4GB of memory. Hence, you nee
 To execute tests no matter in which packages they are, please run the following.
 
 ```
-$ sh run_tests.sh
+$ ./shell.sh run_tests
 ```
 
 # Build
@@ -133,7 +133,7 @@ $ sh run_tests.sh
 The project EpTODocker is basically composed of two Docker containers (cyclon and epto). To build both of them is as simple as run the following script. 
 
 ```
-$ sh build.sh
+$ ./shell.sh build all
 ```
 
 This will run the tests, and in case the tests pass will build the docker images and deploy them into the minikube single-node cluster using the definition stored in `deployment.yml`.
