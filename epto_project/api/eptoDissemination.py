@@ -28,22 +28,22 @@ class EpTODissemination(object):
         self.schedule_repeated_task(initial_delay, interval)
 
     def schedule_repeated_task(self, initial_delay, interval):
-        logger.info('This is a repeated task but I am waiting ' + str(initial_delay) + 's to start.')
+        logger.debug('This is a repeated task but I am waiting a delay to start.',  delay=initial_delay)
         time.sleep(initial_delay)
-        scheduler = BackgroundScheduler(logger=logger)
+        scheduler = BackgroundScheduler()
         scheduler.add_job(self.repeated_task, 'interval', seconds=interval, max_instances=1)
         scheduler.start()
 
     def broadcast(self):
         event = Event(self.ip, ts=self.stability_oracle.get_clock())
-        logger.info('I am adding ' + str(event) + ' to next_ball')
+        logger.debug('I am adding an event to next_ball.', added_event=event)
         self.next_ball.add(event)
 
     def receive_ball(self, received_ball):
-        logger.info('I received =  ' + str(type(received_ball)) + " and ball is =\n" + str(received_ball))
+        logger.debug('I received a ball.', received_ball=received_ball)
         ball = []
         for event in received_ball:
-            logger.info('Looping events, this is a ' + str(type(event)) + " : " + str(event))
+            logger.debug('Looping events.', current_event=event)
             ball.append(Event.from_dict(event))
 
         for event in ball:
@@ -57,27 +57,28 @@ class EpTODissemination(object):
             self.stability_oracle.update_clock(event.ts)
 
     def get_k_view(self, k):
+        logger.debug('Getting PartialView of size k from Cyclon', k=k)
         ret = requests.get('http://localhost:5000/' + self.api_version + '/k-view', params={'k': k}, timeout=5)
-        logger.info('I got the following response:\n' + str(ret.content))
+        logger.debug('I got the a response:',  response=ret.content)
         return json.loads(ret.content)
         # return [ip.encode('ascii', 'ignore') for ip in json.loads(ret.content)]
 
-    def send_next_ball(self, destination):
-        m = Message(format_address(self.ip, 5001), format_address(destination, 5001), self.next_ball)
-        logger.info('I am sending next ball to: ' + str(destination))
-        logger.info('I am sending the following: ' + str(m.to_json()))
+    def send_next_ball(self, destination_ip):
+        destination = os.getenv('TEST_IP', format_address(destination_ip, 5001))
+        m = Message(format_address(self.ip, 5001), destination, self.next_ball)
+        logger.debug('I am sending next ball message.', message=m.to_json(), destination=destination)
         ret = requests.post(m.destination + '/' + self.api_version + '/receive-ball', json=m.to_json(), timeout=5)
         return ret.content
 
     # Task executed every delta time units
     def repeated_task(self):
 
-        logger.info('This repeated_task is started. NextBall is ' + str(self.next_ball))
+        logger.debug('This repeated_task is started.', next_ball=self.next_ball)
 
         if not self.next_ball.is_empty():
 
             self.next_ball.increase_events_ttl()
-            logger.info('I increased the ttl of events in self.next_ball.')
+            logger.debug('I increased the ttl of events in self.next_ball.')
             self.view = self.get_k_view(self.fanout)
             logger.info('I got a k-view from cyclon: ' + str(self.view))
             for destination in self.view:
@@ -86,8 +87,8 @@ class EpTODissemination(object):
 
             self.ordering.order(self.next_ball.copy())
             self.next_ball = Ball()
-            logger.info("Next ball is empty: " + str(self.next_ball))
+            logger.debug("I reset next_ball.", next_ball=self.next_ball)
 
         else:
 
-            logger.info('My next_ball is still empty! Need to wait')
+            logger.debug('My next_ball is still empty! Need to wait', next_ball=self.next_ball)

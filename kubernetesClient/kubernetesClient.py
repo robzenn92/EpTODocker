@@ -4,12 +4,79 @@
 import os
 import sys
 import yaml
+import structlog
+import logging.config
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
 # Getting environment variables from Deployment
 APP = os.environ['APP']
 DEPLOYMENT_NAME = os.environ['DEPLOYMENT_NAME']
+DEFAULT_CONTEXT = 'minikube'
+
+#: Default handler
+LOGGING_DEFAULT_HANDLER = "console"
+#: Default formatter
+LOGGING_DEFAULT_FORMATTER = "STANDARD"
+
+
+def get_logging_formatters():
+    return {
+        "MINIMAL": {
+            "format": "%(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S"
+        },
+        "STANDARD": {
+            "format": "[%(levelname)-7s] %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S"
+        },
+        "VERBOSE": {
+            "format": "%(asctime)s - %(name)s - %(levelname)-8s %(module)s [%(filename)s:%(lineno)s] %(process)d %(thread)d %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S"
+        },
+    }
+
+
+def get_logging_handlers():
+    handlers = {
+        "console": {
+            "level": os.environ['LOG_LEVEL'],
+            "class": "logging.StreamHandler",
+            "formatter": os.environ['LOG_FORMATTER'],
+            "stream": sys.stdout
+        },
+    }
+    return handlers
+
+
+def get_loggers():
+    handlers = [LOGGING_DEFAULT_HANDLER]
+    return {
+        "": {
+            "handlers": handlers,
+            "level": os.environ['LOG_LEVEL'],
+            "propagate": True
+        }
+    }
+
+
+def get_dict_config():
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "root": {
+            "level": os.environ['LOG_LEVEL'],
+            "handlers": [LOGGING_DEFAULT_HANDLER]
+        },
+        "formatters": get_logging_formatters(),
+        "handlers": get_logging_handlers(),
+        "loggers": get_loggers()
+    }
+
+
+logging.config.dictConfig(get_dict_config())
+log = logging.getLogger()
+logger = structlog.wrap_logger(log)
 
 
 class KubernetesClient(object):
@@ -18,23 +85,29 @@ class KubernetesClient(object):
 
     def __init__(self):
 
-        # Configs can be set in Configuration class directly or using helper
-        # utility. If no argument provided, the config will be loaded from
-        # default location.
+        logger.debug('Creating KubernetesClient')
 
-        # try:
-        #     if os.path.exists(os.path.expanduser(config.kube_config.KUBE_CONFIG_DEFAULT_LOCATION)):
-        #         config.load_kube_config()
-        #     else:
-        #         config.load_incluster_config()
-        # except Exception as e:
-        #     sys.stderr.write("Exception when loading configuration: %s\n" % e)
+        config_file = os.getenv('KUBECONFIG', None)
+        context = os.getenv('KUBECONTEXT', DEFAULT_CONTEXT)
+
+        logger.debug('Configuration file is: ' + os.getenv('KUBECONFIG', 'None'))
+        logger.debug('Configuration context is: ' + context)
+
+        list_kube_config_contexts = config.list_kube_config_contexts(config_file)
+        print(list_kube_config_contexts)
 
         try:
+            logger.debug('Trying to load config.load_incluster_config()')
             config.load_incluster_config()
         except Exception as e:
-            config.load_kube_config()
-            sys.stderr.write("Exception when loading configuration: %s\n" % e)
+            s = str(e)
+            logger.critical('Exception when config.load_incluster_config()', exception=s)
+            try:
+                logger.debug('Trying to load config.load_kube_config()')
+                config.load_kube_config(config_file, context)
+            except Exception as e:
+                s = str(e)
+                logger.critical('Exception when config.load_kube_config()', exception=s)
 
         # Clients
         self.ClientV1 = client.CoreV1Api()

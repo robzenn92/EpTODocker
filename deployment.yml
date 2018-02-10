@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: epto-deployment
 spec:
-  replicas: 25
+  replicas: 15
   template:
     metadata:
       labels:
@@ -28,23 +28,29 @@ spec:
           value: "epto"
         - name: DEPLOYMENT_NAME
           value: "epto-deployment"
+        - name: NUMBER_OF_THREADS
+          value: '2'
+        - name: NUMBER_OF_WORKERS
+          value: '1'
+        - name: KUBECONTEXT
+          value: 'epto.cluster.k8s.local'
+        - name: KUBECONFIG
+          value: 'config'
         - name: VIEW_LIMIT
           value: "10"
         - name: SHUFFLE_LENGTH
           value: "8"
         - name: LOG_LEVEL
-          value: "INFO"
-        - name: LOG_DATE_FORMAT
-          value: "%Y-%m-%d,%H:%M:%S"
-        - name: LOG_FORMAT
-          value: "[%(asctime)s.%(msecs)03d - %(levelname)s] %(filename)s:%(lineno)d | %(funcName)s - %(message)s"
+          value: "DEBUG"
+        - name: LOG_FORMATTER
+          value: "STANDARD"
         resources:
           limits:
             memory: 90Mi
-            cpu: 2m
+            cpu: 60m
           requests:
             memory: 75Mi
-            cpu: 1m
+            cpu: 40m
 #      - name: epto
 #        image: epto:latest
 #        imagePullPolicy: Always
@@ -63,17 +69,13 @@ spec:
 #          valueFrom:
 #            fieldRef:
 #              fieldPath: status.podIP
-#        - name: VIEW_LIMIT
-#          value: '2'
 #        - name: BROADCAST_PROB
 #          value: '0.5'
 #        - name: FANOUT
 #          value: '2'
 #        - name: TTL
 #          value: '3'
-#        - name: LOG_LEVEL
-#          value: 'INFO'
-#        - name: LOG_DATE_FORMAT
-#          value: '%Y-%m-%d,%H:%M:%S'
-#        - name: LOG_FORMAT
-#          value: '[%(asctime)s.%(msecs)03d - %(levelname)s] %(filename)s:%(lineno)d | %(funcName)s - %(message)s'
+        - name: LOG_LEVEL
+          value: "DEBUG"
+        - name: LOG_FORMATTER
+          value: "STANDARD"

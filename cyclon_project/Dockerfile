@@ -1,4 +1,4 @@
-FROM python:3.6.3-alpine3.6
+FROM python:3.6.4-alpine3.7
 
 # Set the defaul port to expose
 ARG PORT=5000
@@ -11,9 +11,10 @@ ARG DEST_FOLDER='/usr/src'
 RUN apk add --update tzdata
 ENV TZ=Europe/Rome
 
+ENV KUBECONFIG=$DEST_FOLDER/kubernetesClient/config
+
 ENV PATH=$PATH:$DEST_FOLDER/
 ENV PYTHONPATH=$DEST_FOLDER/
-ENV KUBECONFIG=$DEST_FOLDER/kubernetesClient/config
 
 # Copy the application folders inside the container
 ADD $FOLDER/api $DEST_FOLDER/$FOLDER/api

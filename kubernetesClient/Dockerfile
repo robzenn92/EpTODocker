@@ -1,4 +1,4 @@
-FROM python:3.6.3-alpine3.6
+FROM python:3.6.4-alpine3.7
 
 # Set correct timezone for logging
 RUN apk add --update tzdata
