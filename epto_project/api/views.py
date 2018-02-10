@@ -40,6 +40,16 @@ def get_env(request):
     else:
         return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
+@csrf_exempt
+def get_ball(request):
+    if request.method == 'GET':
+        if not request.GET:
+            return JsonResponse(epto.dissemination.next_ball.to_json(), safe=False)
+        else:
+            return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
+    else:
+        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
+
 
 # ---------------------
 # Production routes

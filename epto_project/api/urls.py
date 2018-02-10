@@ -10,6 +10,7 @@ urlpatterns = [
 
         path('hello', views.get_hello, name='index'),
         path('env', views.get_env, name='env'),
+        path('ball', views.get_ball, name='ball'),
 
         # ---------------------
         # Production routes
