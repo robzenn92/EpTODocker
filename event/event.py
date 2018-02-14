@@ -7,9 +7,10 @@ import ipaddress
 
 class Event(object):
 
-    def __init__(self, source_id: str, event_id: uuid = None, ttl: int = 0, ts: int = 0) -> None:
+    def __init__(self, source_id: str, event_id: uuid = None, data: str = None, ttl: int = 0, ts: int = 0) -> None:
         self.event_id = uuid.uuid4().int if event_id is None else event_id
         self.source_id = source_id
+        self.data = data
         self.ttl = ttl
         self.ts = ts
 
@@ -73,9 +74,10 @@ class Event(object):
     def from_dict(cls, event: dict):
         event_id = int(event['event_id'])
         source_id = str(event['source_id'])
+        data = str(event['data'])
         ttl = int(event['ttl'])
         ts = int(event['ts'])
-        return cls(source_id, event_id, ttl, ts)
+        return cls(source_id, event_id, data, ttl, ts)
 
     def to_json(self):
         return json.loads(json.dumps(self, default=lambda o: o.__dict__, sort_keys=True))
@@ -83,6 +85,7 @@ class Event(object):
     def __str__(self) -> str:
         letters = [chr(letter).upper() for letter in range(ord('a'), ord('z')+1)]
         ip = str(ipaddress.ip_address(self.source_id))
-        return str(letters[list(map(int, ip.split('.')))[-1] % len(letters)]) + str(self.ts) + ' (' + ip + ', ts=' + str(self.ts) + ', ttl=' + str(self.ttl) + ')'
+        human_readable = self.data if self.data else str(letters[list(map(int, ip.split('.')))[-1] % len(letters)])
+        return human_readable + str(self.ts) + ' (' + ip + ', ts=' + str(self.ts) + ', ttl=' + str(self.ttl) + ')'
 
     __repr__ = __str__

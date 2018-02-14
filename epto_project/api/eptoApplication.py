@@ -31,3 +31,6 @@ class EpTOApplication(object):
         logger.debug('This is probabilistic_broadcast.', prob=prob)
         if prob <= float(os.environ['BROADCAST_PROB']):
             self.dissemination.broadcast()
+
+    def broadcast(self, data: str):
+        self.dissemination.broadcast(data)

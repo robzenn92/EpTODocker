@@ -42,6 +42,11 @@ class TestEvent(unittest.TestCase):
         self.assertEqual(self.event.ttl, 0)
         self.assertEqual(self.event.ts, 0)
 
+    def test_new_event_with_data(self):
+        self.assertIsNone(self.event.data)
+        self.event.data = 'secret'
+        self.assertIsNotNone(self.event.data)
+
     def test_different_events_should_not_be_equal(self):
         e1 = Event("source")
         e2 = Event("source")
@@ -62,7 +67,7 @@ class TestEvent(unittest.TestCase):
         initial_source_id = "my new ip"
         initial_ts = random.randint(1, 10)
         initial_ttl = random.randint(1, 10)
-        self.event = Event(initial_source_id, initial_uuid, initial_ttl, initial_ts)
+        self.event = Event(initial_source_id, initial_uuid, None, initial_ttl, initial_ts)
         self.assertEqual(self.event.event_id, initial_uuid)
         self.assertEqual(self.event.source_id, initial_source_id)
         self.assertEqual(self.event.ttl, initial_ttl)
@@ -80,7 +85,7 @@ class TestEvent(unittest.TestCase):
         initial_source_id = "my new ip"
         initial_ts = random.randint(1, 10)
         initial_ttl = random.randint(1, 10)
-        self.event = Event(initial_source_id, initial_uuid, initial_ttl, initial_ts)
+        self.event = Event(initial_source_id, initial_uuid, None, initial_ttl, initial_ts)
         self.event.increase_ttl()
         self.assertEqual(self.event.source_id, initial_source_id)
         self.assertEqual(self.event.event_id, initial_uuid)
