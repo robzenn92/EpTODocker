@@ -110,4 +110,4 @@ resources/
 
 kubernetesClient/*.crt
 kubernetesClient/*.key
-kubernetesClient/*config
+kubernetesClient/*config*

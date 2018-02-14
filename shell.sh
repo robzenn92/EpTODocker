@@ -116,18 +116,17 @@ function build {
 
 function tag_image {
 
+    kops_export_env
     read -p "Do you want to tag $1? [y/N] " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        tag="884973541725.dkr.ecr.us-west-2.amazonaws.com/thesis:"
-        read -p "Is this tag ok for you? [$tag$1] [Y/n] " -r
+        tag=$REGISTRY_URI$1:latest
+        read -p "Is this tag ok for you? [$tag] [Y/n] " -r
         echo
         if [[ $REPLY =~ ^[Nn]$ ]]; then
             read -p "Please, enter the tag you want for $1: " -r
             echo
             tag=$REPLY
-        else
-            tag=$tag$1
         fi
         echo "docker tag $1:$VERSION $tag"
         docker tag $1:${VERSION} $tag
