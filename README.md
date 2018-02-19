@@ -152,6 +152,8 @@ To deploy EpTO into minikube, you just need to run a kubectl command specifying 
 $ kubectl create -f deployment.yml
 ```
 
+![Architecture](https://raw.githubusercontent.com/robzenn92/EpTODocker/master/resources/epto_pod_network/architecture.png)
+
 # Smoke Test
 
 In order to make the replica set accessible from the outside world, you need to create a service which exposes the NodePort of the pods as follows.
