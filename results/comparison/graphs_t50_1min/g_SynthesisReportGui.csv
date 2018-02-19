@@ -1,0 +1,4 @@
+Label,# Samples,Average,Min,Max,90% Line,Std. Dev.,Error %,Throughput,Received KB/sec,Avg. Bytes
+HTTP GET http://cyclon:5000/v1/hello,5560,258,6,879,307,"54,99","0,00%","91,3","23,55","264,0"
+HTTP POST http://cyclon:5000/v1/exchange-view,5533,281,15,935,333,"58,64","0,00%","90,8","38,35","432,2"
+TOTAL,11093,269,6,935,323,"58,03","0,00%","182,1","61,86","347,9"

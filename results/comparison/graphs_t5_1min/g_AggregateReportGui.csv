@@ -1,0 +1,4 @@
+sampler_label,aggregate_report_count,average,aggregate_report_median,aggregate_report_90%_line,aggregate_report_95%_line,aggregate_report_99%_line,aggregate_report_min,aggregate_report_max,aggregate_report_error%,aggregate_report_rate,aggregate_report_bandwidth,aggregate_report_stddev
+HTTP GET http://cyclon:5000/v1/hello,5795,15,13,27,34,43,1,87,"0,00%","96,5","24,9","8,54"
+HTTP POST http://cyclon:5000/v1/exchange-view,5794,35,37,51,56,68,7,130,"0,00%","96,5","40,7","13,34"
+TOTAL,11589,25,21,47,51,63,1,130,"0,00%","192,9","65,5","15,30"
