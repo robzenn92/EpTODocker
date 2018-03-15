@@ -2,7 +2,7 @@
 
 A real distributed system managed by Kubernetes and composed of Docker containers which run EpTO developed in Python.
 
-![EpTO Network](https://raw.githubusercontent.com/robzenn92/EpTODocker/master/resources/epto_pod_network/epto_pod_network.jpg)
+![EpTO Network](https://raw.githubusercontent.com/robzenn92/EpTODocker/master/resources/design.png)
 
 ## Requirements
 
@@ -152,7 +152,7 @@ To deploy EpTO into minikube, you just need to run a kubectl command specifying 
 $ kubectl create -f deployment.yml
 ```
 
-![Architecture](https://raw.githubusercontent.com/robzenn92/EpTODocker/master/resources/epto_pod_network/architecture.png)
+![Architecture](https://raw.githubusercontent.com/robzenn92/EpTODocker/master/resources/architecture.png)
 
 # Smoke Test
 
