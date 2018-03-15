@@ -71,7 +71,8 @@ def receive_ball(request):
 def broadcast_event(request):
     if request.method == 'POST':
         logger.info("I received this:\n" + str(request.body))
-        epto.dissemination.broadcast('secret')
+        message = json.loads(request.body)
+        epto.dissemination.broadcast(message.get('event'))
         return JsonResponse({'success': True})
     else:
         return JsonResponse({"error": {"message": "Only the POST method is allowed."}}, status=403)
