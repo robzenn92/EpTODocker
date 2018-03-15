@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: epto-deployment
 spec:
-  replicas: 15
+  replicas: 20
   template:
     metadata:
       labels:
@@ -32,10 +32,10 @@ spec:
           value: '2'
         - name: NUMBER_OF_WORKERS
           value: '1'
-        - name: KUBECONTEXT
-          value: 'epto.cluster.k8s.local'
-        - name: KUBECONFIG
-          value: 'config'
+#        - name: KUBECONTEXT
+#          value: 'epto.cluster.k8s.local'
+#        - name: KUBECONFIG
+#          value: 'config'
         - name: VIEW_LIMIT
           value: "10"
         - name: SHUFFLE_LENGTH
@@ -51,30 +51,34 @@ spec:
           requests:
             memory: 75Mi
             cpu: 40m
-#      - name: epto
-#        image: epto:latest
-#        imagePullPolicy: Always
-#        ports:
-#        - containerPort: 5001
-#        env:
-#        - name: MY_POD_NAME
-#          valueFrom:
-#            fieldRef:
-#              fieldPath: metadata.name
-#        - name: MY_POD_UID
-#          valueFrom:
-#            fieldRef:
-#              fieldPath: metadata.uid
-#        - name: MY_POD_IP
-#          valueFrom:
-#            fieldRef:
-#              fieldPath: status.podIP
-#        - name: BROADCAST_PROB
-#          value: '0.5'
-#        - name: FANOUT
-#          value: '2'
-#        - name: TTL
-#          value: '3'
+      - name: epto
+        image: epto:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5001
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: NUMBER_OF_THREADS
+          value: '2'
+        - name: NUMBER_OF_WORKERS
+          value: '1'
+        - name: BROADCAST_PROB
+          value: '0.5'
+        - name: FANOUT
+          value: '2'
+        - name: TTL
+          value: '3'
         - name: LOG_LEVEL
           value: "DEBUG"
         - name: LOG_FORMATTER

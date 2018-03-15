@@ -6,7 +6,7 @@ docker run -it -p 5000:5000 \
     -e MY_POD_IP='172.17.0.254' \
     -e VIEW_LIMIT='4' \
     -e SHUFFLE_LENGTH='3' \
-    -e LOG_LEVEL='INFO' \
+    -e LOG_LEVEL='DEBUG' \
     -e LOG_FORMATTER='VERBOSE' \
     -e KUBECONFIG="../kubernetesClient/config" \
     -e NUMBER_OF_THREADS='3' \
