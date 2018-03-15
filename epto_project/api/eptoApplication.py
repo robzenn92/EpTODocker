@@ -3,6 +3,8 @@
 import os
 import time
 import random
+
+from event.event import Event
 from .configuration import logger
 from .eptoDissemination import EpTODissemination
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -11,9 +13,10 @@ from apscheduler.schedulers.background import BackgroundScheduler
 class EpTOApplication(object):
 
     def __init__(self):
+        self.delivered_events = []
         logger.debug('Epto Dissemination component will broadcast Balls every delta time unit.', delta=10, unit='seconds')
         logger.debug('Epto Ordering component will deliver Balls every delta time unit.', delta=15, unit='seconds')
-        self.dissemination = EpTODissemination(10, 15)
+        self.dissemination = EpTODissemination(10, 15, self)
         # self.schedule_probabilistic_broadcast(10, 10)
 
     def schedule_probabilistic_broadcast(self, initial_delay, interval):
@@ -34,3 +37,10 @@ class EpTOApplication(object):
 
     def broadcast(self, data: str):
         self.dissemination.broadcast(data)
+
+    def deliver_event(self, event: Event):
+        self.delivered_events.append(event.to_json())
+        logger.critical("I delivered " + str(event))
+
+    def get_delivered_events(self):
+        return self.delivered_events

@@ -16,7 +16,7 @@ from .stabilityOracle import StabilityOracle
 
 class EpTODissemination(object):
 
-    def __init__(self, initial_delay, interval):
+    def __init__(self, initial_delay, interval, application):
         self.ip = my_ip()
         self.api_version = 'v1'
         self.next_ball = Ball()
@@ -24,7 +24,7 @@ class EpTODissemination(object):
         self.fanout = int(os.environ['FANOUT'])
         self.ttl = int(os.environ['TTL'])
         self.stability_oracle = StabilityOracle(self.ttl)
-        self.ordering = EpTOOrdering(self.stability_oracle)
+        self.ordering = EpTOOrdering(self.stability_oracle, application)
         self.schedule_repeated_task(initial_delay, interval)
 
     def schedule_repeated_task(self, initial_delay, interval):
@@ -85,10 +85,6 @@ class EpTODissemination(object):
                 response = self.send_next_ball(destination)
                 logger.info('I sent next ball to ' + destination + ' and I got ' + str(response))
 
-            self.ordering.order(self.next_ball.copy())
-            self.next_ball = Ball()
-            logger.debug("I reset next_ball.", next_ball=self.next_ball)
-
-        else:
-
-            logger.debug('My next_ball is still empty! Need to wait', next_ball=self.next_ball)
+        self.ordering.order(self.next_ball.copy())
+        self.next_ball = Ball()
+        logger.debug("I reset next_ball.", next_ball=self.next_ball)
