@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - KubernetsClient can be built as Docker container and be deployed in a cluster.
 
 ### Changed
+- EpTO's `receive-ball` endpoint has been renamed to `send-ball`  [#19](https://github.com/robzenn92/EpTODocker/issues/19)
 - Logging from standard module to structlog. [#5](https://github.com/robzenn92/EpTODocker/issues/5)
 - Cyclon and EpTO have been migrated from Python 2.7 with Flask 0.12 to Python 3.6 with Django 2.0. [#1](https://github.com/robzenn92/EpTODocker/issues/1)
 

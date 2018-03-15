@@ -16,6 +16,6 @@ urlpatterns = [
         # Production routes
         # The below routes are for production use.
 
-        path('receive-ball', views.receive_ball, name='receive-ball')
+        path('send-ball', views.receive_ball, name='send-ball')
     ])),
 ]

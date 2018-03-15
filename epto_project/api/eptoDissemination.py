@@ -67,7 +67,7 @@ class EpTODissemination(object):
         destination = os.getenv('TEST_IP', format_address(destination_ip, 5001))
         m = Message(format_address(self.ip, 5001), destination, self.next_ball)
         logger.debug('I am sending next ball message.', message=m.to_json(), destination=destination)
-        ret = requests.post(m.destination + '/' + self.api_version + '/receive-ball', json=m.to_json(), timeout=5)
+        ret = requests.post(m.destination + '/' + self.api_version + '/send-ball', json=m.to_json(), timeout=5)
         return ret.content
 
     # Task executed every delta time units
