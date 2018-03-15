@@ -56,7 +56,11 @@ def get_ball(request):
 def get_delivered_events(request):
     if request.method == 'GET':
         if not request.GET:
-            return JsonResponse(epto.get_delivered_events(), safe=False)
+            response = {
+                'ip': my_ip(),
+                'events': epto.get_delivered_events()
+            }
+            return JsonResponse(response, safe=False)
         else:
             return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
     else:
