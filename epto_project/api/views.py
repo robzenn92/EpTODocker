@@ -52,6 +52,17 @@ def get_ball(request):
         return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
 
+@csrf_exempt
+def get_delivered_events(request):
+    if request.method == 'GET':
+        if not request.GET:
+            return JsonResponse(epto.get_delivered_events(), safe=False)
+        else:
+            return JsonResponse({"error": {"message": "The list of parameters has to be empty."}}, status=500)
+    else:
+        return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
+
+
 # ---------------------
 # Production routes
 # The below routes are for production use.

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
+- EpTO endpoint to retrieve the list of delivered events. [#20](https://github.com/robzenn92/EpTODocker/issues/20)
 - EpTO endpoint to broadcast a new event.[#18](https://github.com/robzenn92/EpTODocker/issues/18)
 - EpTO endpoint to get the Ball set at any time for debugging purposes. [#16](https://github.com/robzenn92/EpTODocker/issues/16)
 - API version v1. [#15](https://github.com/robzenn92/EpTODocker/issues/15)

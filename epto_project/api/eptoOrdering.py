@@ -5,16 +5,19 @@ from .configuration import logger
 
 class EpTOOrdering(object):
 
-    def __init__(self, stability_oracle):
+    def __init__(self, stability_oracle, application):
         self.received = set()   # received map of (id, event) pairs with all known but not yet delivered events
         self.delivered = []     # list of all the events already delivered to the application
         self.stability_oracle = stability_oracle
         self.last_delivered_ts = 0
+        self.application = application  # reference to the application layer
 
     # Procedure order is called every round and its goal is to deliver events to the application.
     # The main task of this procedure is to move events from the received set to the delivered set,
     # preserving the total order of the events.
     def order(self, ball):
+
+        logger.debug('This Ordering component has been invoked.', ball=ball, received=self.received)
 
         # We start by incrementing the ttl of all events previously received to indicate the start of a new round.
         for event in self.received:
@@ -67,4 +70,4 @@ class EpTOOrdering(object):
     def deliver(self, event):
         self.delivered.append(event)
         self.last_delivered_ts = event.ts
-        logger.critical("I Delivered " + str(event))
+        self.application.deliver_event(event)

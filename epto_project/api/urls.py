@@ -17,6 +17,7 @@ urlpatterns = [
         # The below routes are for production use.
 
         path('send-ball', views.receive_ball, name='send-ball'),
-        path('broadcast', views.broadcast_event, name='broadcast')
+        path('broadcast', views.broadcast_event, name='broadcast'),
+        path('delivered-events', views.get_delivered_events, name='delivered-events')
     ])),
 ]
