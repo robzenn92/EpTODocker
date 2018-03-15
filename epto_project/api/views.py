@@ -40,6 +40,7 @@ def get_env(request):
     else:
         return JsonResponse({"error": {"message": "Only the GET method is allowed."}}, status=403)
 
+
 @csrf_exempt
 def get_ball(request):
     if request.method == 'GET':
@@ -61,6 +62,17 @@ def receive_ball(request):
         logger.info("I received this:\n" + str(request.body))
         message = json.loads(request.body)
         epto.dissemination.receive_ball(message.get('data'))
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({"error": {"message": "Only the POST method is allowed."}}, status=403)
+
+
+@csrf_exempt
+def broadcast_event(request):
+    if request.method == 'POST':
+        logger.info("I received this:\n" + str(request.body))
+        message = json.loads(request.body)
+        epto.dissemination.broadcast(message.get('event'))
         return JsonResponse({'success': True})
     else:
         return JsonResponse({"error": {"message": "Only the POST method is allowed."}}, status=403)

@@ -14,7 +14,7 @@ class EpTOApplication(object):
         logger.debug('Epto Dissemination component will broadcast Balls every delta time unit.', delta=10, unit='seconds')
         logger.debug('Epto Ordering component will deliver Balls every delta time unit.', delta=15, unit='seconds')
         self.dissemination = EpTODissemination(10, 15)
-        self.schedule_probabilistic_broadcast(10, 10)
+        # self.schedule_probabilistic_broadcast(10, 10)
 
     def schedule_probabilistic_broadcast(self, initial_delay, interval):
         logger.debug('This is schedule_probabilistic_broadcast but I am waiting a delay to start.', delay=initial_delay)
@@ -31,3 +31,6 @@ class EpTOApplication(object):
         logger.debug('This is probabilistic_broadcast.', prob=prob)
         if prob <= float(os.environ['BROADCAST_PROB']):
             self.dissemination.broadcast()
+
+    def broadcast(self, data: str):
+        self.dissemination.broadcast(data)

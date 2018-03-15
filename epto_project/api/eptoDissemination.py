@@ -34,8 +34,8 @@ class EpTODissemination(object):
         scheduler.add_job(self.repeated_task, 'interval', seconds=interval, max_instances=1)
         scheduler.start()
 
-    def broadcast(self):
-        event = Event(self.ip, ts=self.stability_oracle.get_clock())
+    def broadcast(self, data: str = None):
+        event = Event(self.ip, data=data, ts=self.stability_oracle.get_clock())
         logger.debug('I am adding an event to next_ball.', added_event=event)
         self.next_ball.add(event)
 
