@@ -2,7 +2,7 @@ APScheduler==3.4.0
 cachetools==2.0.1
 certifi==2017.11.5
 chardet==3.0.4
-Django==2.0
+Django==2.2.10
 get==0.0.39
 google-auth==1.2.1
 gunicorn==19.7.1
