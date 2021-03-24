@@ -20,7 +20,7 @@ PyYAML==3.12
 query-string==0.0.28
 requests==2.18.4
 requests-oauthlib==0.8.0
-rsa==3.4.2
+rsa==4.1
 six==1.11.0
 structlog==18.1.0
 tzlocal==1.5.1
