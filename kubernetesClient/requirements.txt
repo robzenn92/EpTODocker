@@ -14,6 +14,6 @@ requests-oauthlib==0.8.0
 rsa==3.4.2
 six==1.11.0
 tzlocal==1.5.1
-urllib3==1.22
+urllib3==1.26.5
 websocket-client==0.40.0
 structlog==18.1.0
